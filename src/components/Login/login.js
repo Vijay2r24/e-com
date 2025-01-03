@@ -3,37 +3,83 @@ import Google from "../../assets/images/icons8-google-48.png";
 import facebook from "../../assets/images/icons8-facebook-48.png";
 import loginBanner from "../../assets/images/Frame 15.png";
 import cart from "../../assets/images/cart-148964_1280 1.png";
+import {jwtDecode} from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+
+// Example function definitions if you haven't defined them elsewhere
+const fetchApiData = async () => {
+  console.log('Fetching API data...');
+};
+
+const fetchAndStoreStoresData = async () => {
+  console.log('Fetching and storing stores data...');
+};
 
 const LoginScreen = () => {
   const [slideIn, setSlideIn] = useState(false);
-  const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Hook to programmatically navigate
-  const dummyUser = {
-    email: "admin@example.com",
-    password: "123",
-  };
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setTimeout(() => setSlideIn(true), 200); // Trigger slide-in animation
+    setTimeout(() => setSlideIn(true), 200);
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email === dummyUser.email && password === dummyUser.password) {
-      alert("Login successful!");
-      navigate("/dashboard"); // Navigate to the desired screen
-      setError("");
-    } else {
-      setError("Invalid email or password.");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(
+        "https://electronic-ecommerce.onrender.com/api/userTenantlogin",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ Email: userName, Password: password }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const { token } = data;
+        const decodedToken = jwtDecode(token);
+
+        const roleID = decodedToken.RoleID;
+        const userID = decodedToken.UserID;
+        const TenantID = decodedToken.TenantID;
+
+        localStorage.setItem("UserID", userID);
+        localStorage.setItem("TenantID", TenantID);
+
+        console.log("Logged-in UserID:", userID);
+        console.log("Logged-in TenantID:", TenantID);
+
+        // Mock additional actions
+        await Promise.all([fetchApiData(), fetchAndStoreStoresData()]);
+
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 3000);
+      } else {
+        setError(data.message);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An error occurred during login. Please try again.");
+    } finally {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 10000);
     }
   };
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
-      {/* Left Section with Slide-In Effect */}
       <img
         src={loginBanner}
         alt="Characters"
@@ -42,10 +88,8 @@ const LoginScreen = () => {
         }`}
       />
 
-      {/* Right Section */}
       <div className="flex flex-col justify-center items-center bg-white w-full md:w-1/2 p-6 sm:p-4">
         <div className="w-full max-w-sm">
-          {/* Header */}
           <div className="flex flex-col items-center mb-6">
             <div className="bg-pacific-500 rounded-full p-4 mb-3 shadow-lg">
               <img src={cart} alt="Logo" className="w-8 h-8" />
@@ -55,15 +99,15 @@ const LoginScreen = () => {
             <h2 className="text-xl font-semibold mb-2 mt-2">Welcome Back</h2>
             <p className="text-gray-600">Please login to your account</p>
           </div>
-          {/* Form */}
-          <form onSubmit={handleSubmit}>
+
+          <form onSubmit={handleLogin}>
             <div className="mb-4">
               <input
                 type="email"
                 placeholder="Email address"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pacific-500 transition"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
               />
             </div>
             <div className="mb-4 relative">
@@ -84,19 +128,18 @@ const LoginScreen = () => {
             <button
               type="submit"
               className="w-full bg-pacific-500 text-white p-3 rounded-lg hover:bg-pacific-600 transition"
+              disabled={isLoading}
             >
-              Login
+              {isLoading ? "Loading..." : "Login"}
             </button>
           </form>
 
-          {/* Divider */}
           <div className="flex items-center my-6">
             <div className="h-px bg-gradient-to-r from-gray-300 to-transparent flex-grow"></div>
             <span className="px-3 text-gray-500">Or Login With</span>
             <div className="h-px bg-gradient-to-l from-gray-300 to-transparent flex-grow"></div>
           </div>
 
-          {/* Social Login */}
           <div className="flex gap-4">
             <button className="flex items-center justify-center w-full p-3 border border-gray-300 rounded-lg gap-2 hover:bg-gray-100">
               <img src={Google} alt="Google" className="w-5 h-5" />
@@ -108,9 +151,8 @@ const LoginScreen = () => {
             </button>
           </div>
 
-          {/* Signup Link */}
           <p className="mt-6 text-center text-gray-500">
-            Don’t have an account?{" "}
+            Don’t have an account? {" "}
             <a
               href="#"
               className="text-pacific-500 hover:underline hover:text-pacific-600 transition"
@@ -125,6 +167,8 @@ const LoginScreen = () => {
 };
 
 export default LoginScreen;
+
+
 
 
 

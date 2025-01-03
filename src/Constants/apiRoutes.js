@@ -23,3 +23,7 @@ export const updateColour=`${BASE_URL}/updateColour`;
 export const createProductType=`${BASE_URL}/createProductType`;
 export const getProductTypeById=`${BASE_URL}/getProductTypeById`;
 export const updateProductType=`${BASE_URL}/updateProductType`;
+export const getAllUsers=`${BASE_URL}/getAllUsers`;
+export const deleteUser=`${BASE_URL}/deleteUser`;
+export const userCreateOrUpdate=`${BASE_URL}/userCreateOrUpdate`;
+export const getUserById=`${BASE_URL}/getUserById`

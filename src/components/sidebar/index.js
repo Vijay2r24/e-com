@@ -11,20 +11,24 @@ import {
   FaBoxOpen,
   FaTh,
   FaUser,
+  FaCartPlus,
+  FaStore
 } from "react-icons/fa";
-import { MdOutlineBusiness } from 'react-icons/md';
+import { MdOutlineBusiness,MdAssessment } from 'react-icons/md';
 import { GiShoppingBag } from 'react-icons/gi';
-import { AiOutlineUsergroupAdd } from 'react-icons/ai';
+import { AiOutlineUsergroupAdd } from 'react-icons/ai'; 
 
 const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
   const sidebarItems = [
     { icon: <FaShoppingCart />, label: "Dashboard", path: "/dashboard" },
     { icon: <GiShoppingBag />, label: "Browse", path: "/Browse/step1/create" },
     { icon: <FaInbox />, label: "Orders", path: "/orders" },
-    { icon: <FaTabletAlt />, label: "Add Products", path: "/products" },
+    { icon: <FaCartPlus />, label: "Add Products", path: "/products" },
     { icon: <FaBoxOpen />, label: "All Products", path: "/all-products" },
     { icon: <FaUser />, label: "Profile", path: "/Profile" },
     { icon: <FaUsers />, label: "Users", path: "/UserList" },
+    { icon: <FaStore />, label: "Stores", path: "/storeList" },
+    { icon: <MdAssessment />, label: "Reports", path: "/UserList" },
   ];
 
   return (

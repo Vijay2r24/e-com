@@ -199,7 +199,7 @@ const Step2 = ({ updateFormData, productData, updateImagesAndIndex }) => {
   const handleSubmit = () => {
     const payload = items.map((item) => {
       // Construct the object for each item
-      console.log("images",items)
+      console.log("images", items)
       const Colors = {
         ColourID: item.ColourID,
         Sizes: item.sizes.map((size) => ({
@@ -305,7 +305,9 @@ const Step2 = ({ updateFormData, productData, updateImagesAndIndex }) => {
               <div key={sizeIdx} className="flex items-center space-x-4">
                 {/* Size Dropdown */}
                 <div className="flex flex-col space-y-2 w-1/4">
-                  <label className="text-sm font-medium text-gray-700">Size</label>
+                  {sizeIdx === 0 && (
+                    <label className="text-sm font-medium text-gray-700">Size</label>
+                  )}
                   <select
                     name="size"
                     value={sizeItem.size}
@@ -323,7 +325,9 @@ const Step2 = ({ updateFormData, productData, updateImagesAndIndex }) => {
 
                 {/* Price Input */}
                 <div className="flex flex-col space-y-2 w-1/4">
-                  <label className="text-sm font-medium text-gray-700">Price</label>
+                  {sizeIdx === 0 && (
+                    <label className="text-sm font-medium text-gray-700">Price</label>
+                  )}
                   <input
                     type="number"
                     name="price"
@@ -336,7 +340,9 @@ const Step2 = ({ updateFormData, productData, updateImagesAndIndex }) => {
 
                 {/* Quantity Input */}
                 <div className="flex flex-col space-y-2 w-1/4">
-                  <label className="text-sm font-medium text-gray-700">Quantity</label>
+                  {sizeIdx === 0 && (
+                    <label className="text-sm font-medium text-gray-700">Quantity</label>
+                  )}
                   <input
                     type="number"
                     name="quantity"
@@ -363,6 +369,7 @@ const Step2 = ({ updateFormData, productData, updateImagesAndIndex }) => {
               + Add Size
             </button>
           </div>
+
 
           {/* Product Images Section */}
           <div className="space-y-4">

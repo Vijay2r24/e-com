@@ -33,7 +33,11 @@ import SignupPage from "./components/Login/SignupPage";
 import UserList from "./components/Users/userList";
 import UserAdd from "./components/Users/userAdd";
 import ForgotPassword from "./components/Login/forgotPassword";
-import Profile from "./components/Profile/profile"
+import SingleProduct from "./components/singleProduct/product";
+import Profile from "./components/Profile/profile";
+import StoreList from "./components/Stores/storeList";
+import StoreAdd from "./components/Stores/storeForm"
+
 
 
 const AppRoutes = () => {
@@ -60,6 +64,18 @@ const AppRoutes = () => {
         {
           path:"/Profile",
           element:<Profile/>,
+        },
+        {
+          path:"/singleProduct",
+          element:<SingleProduct />
+        },
+        {
+          path:"/storeList",
+          element:<StoreList/>
+        },
+        {
+          path:"/storeAdd",
+          element:<StoreAdd />
         },
         {
           path: "/categories/:categoryID",
