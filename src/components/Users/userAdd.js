@@ -169,7 +169,7 @@ const UserRegistrationPage = () => {
         Password: "",
         ConfirmPassword: "",
         imagePreview: user.ProfileImageUrl,
-        imageFile: null,
+        imageFile:user.ProfileImageUrl,
       });
     }
   }, [editMode]);
@@ -256,7 +256,10 @@ const UserRegistrationPage = () => {
   return (
     <div className="flex flex-col space-y-6 p-6 max-w-6xl mx-auto bg-white rounded-lg border border-gray-300">
       <ToastContainer />
-      <h1 className="text-xl font-semibold text-gray-800 mb-4">Add Users</h1>
+      <h1 className="text-xl font-semibold text-gray-800 mb-4">
+  {editMode ? 'Update User' : 'Add Users'}
+</h1>
+
 
       <div className="flex gap-4">
         <div className="w-full">
@@ -520,35 +523,42 @@ const UserRegistrationPage = () => {
         <label className="block text-sm font-semibold text-gray-700 mb-2">
           Upload Profile Image
         </label>
-        <input
-          type="file"
-          accept="image/*"
-          className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-          onChange={handleFileChange}
-        />
-        {formData1.imagePreview && (
-          <div className="relative w-24 h-24 z-28 group overflow-hidden border rounded-md mt-4">
-            <img
-              src={formData1.imagePreview}
-              alt="Preview"
-              className="object-cover w-full h-full"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100">
-              <button
-                onClick={handleDelete}
-                className="text-white bg-red-600 p-1 rounded-full mr-2"
-              >
-                <FiTrash size={14} title="Delete" />
-              </button>
-              <button
-                onClick={handleView}
-                className="text-white bg-blue-600 p-1 rounded-full"
-              >
-                <FiEye size={14} />
-              </button>
-            </div>
-          </div>
-        )}
+        {formData1.imagePreview ? (
+    <div className="relative w-24 h-24 z-28 group overflow-hidden border rounded-md mt-4">
+      <img
+        src={formData1.imagePreview}
+        alt="Preview"
+        className="object-cover w-full h-full"
+      />
+      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100">
+        <button
+          onClick={() =>
+            setFormData1((prevState) => ({
+              ...prevState,
+              imagePreview: "",
+              imageFile: null,
+            }))
+          }
+          className="text-white bg-red-600 p-1 rounded-full mr-2"
+        >
+          <FiTrash size={14} title="Delete" />
+        </button>
+        <button
+          onClick={handleView}
+          className="text-white bg-blue-600 p-1 rounded-full"
+        >
+          <FiEye size={14} title="View" />
+        </button>
+      </div>
+    </div>
+  ) : (
+    <input
+      type="file"
+      accept="image/*"
+      className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+      onChange={handleFileChange}
+    />
+  )}
         {/* Modal to view image */}
         {isModalOpen && (
           <div className="fixed inset-0 flex items-center z-10 justify-center bg-black bg-opacity-50">

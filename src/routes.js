@@ -36,7 +36,8 @@ import ForgotPassword from "./components/Login/forgotPassword";
 import SingleProduct from "./components/singleProduct/product";
 import Profile from "./components/Profile/profile";
 import StoreList from "./components/Stores/storeList";
-import StoreAdd from "./components/Stores/storeForm"
+import StoreAdd from "./components/Stores/storeForm";
+import BannerImage from "./components/BannerImages/bannerImage"
 
 
 
@@ -76,6 +77,10 @@ const AppRoutes = () => {
         {
           path:"/storeAdd",
           element:<StoreAdd />
+        },
+        {
+          path:"/BannerImage",
+          element:<BannerImage />
         },
         {
           path: "/categories/:categoryID",

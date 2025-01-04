@@ -33,7 +33,7 @@ const LoginScreen = () => {
 
     try {
       const response = await fetch(
-        "https://electronic-ecommerce.onrender.com/api/userTenantlogin",
+        "https://electronic-ecommerce.onrender.com/api/userlogin",
         {
           method: "POST",
           headers: {
@@ -48,14 +48,12 @@ const LoginScreen = () => {
       if (response.ok) {
         const { token } = data;
         const decodedToken = jwtDecode(token);
-
         const roleID = decodedToken.RoleID;
         const userID = decodedToken.UserID;
         const TenantID = decodedToken.TenantID;
 
         localStorage.setItem("UserID", userID);
         localStorage.setItem("TenantID", TenantID);
-
         console.log("Logged-in UserID:", userID);
         console.log("Logged-in TenantID:", TenantID);
 
