@@ -12,11 +12,14 @@ import {
   FaTh,
   FaUser,
   FaCartPlus,
-  FaStore
+  FaStore,
+  FaBell
 } from "react-icons/fa";
 import { MdOutlineBusiness,MdAssessment } from 'react-icons/md';
 import { GiShoppingBag } from 'react-icons/gi';
 import { AiOutlineUsergroupAdd } from 'react-icons/ai'; 
+import Logo from "../../assets/images/logo.png";
+import { MdOutlineEditNotifications } from "react-icons/md";
 
 const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
   const sidebarItems = [
@@ -28,7 +31,7 @@ const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
     { icon: <FaUser />, label: "Profile", path: "/Profile" },
     { icon: <FaUsers />, label: "Users", path: "/UserList" },
     { icon: <FaStore />, label: "Stores", path: "/storeList" },
-    { icon: <MdAssessment />, label: "Reports", path: "/UserList" },
+    { icon: <FaBell />, label: "Push Notifications", path: "/UserList" },
   ];
 
   return (
@@ -49,7 +52,7 @@ const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
       >
         {/* Logo and Close Icon for small screens */}
         <div className="flex justify-between items-center p-2.5 border-b-2">
-          <h2 className="text-2xl text-pacific-500">Logo</h2>
+        <img src={Logo} alt="Logo" className="w-14 h-8 object-contain" />
           <button
             onClick={toggleSidebar}
             className="lg:hidden text-gray-500 hover:text-gray-800"

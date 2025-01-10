@@ -6,6 +6,7 @@ import { CategoriesProvider } from '../src/components/Context/CategoriesContext'
 import { DataProvider } from '../src/components/Context/SizeContext';
 import { ColorProvider } from '../src/components/Context/ColorContext';
 import {ProductTypesProvider}from '../src/components/Context/AllProductTypesContext';
+import TawkToWidget from'../src/components/tawk/TawkToWidget';
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
           </DataProvider>
         </CategoriesProvider>
       </BrandsProvider>
+      <TawkToWidget />
+
     </BrowserRouter>
   );
 }

@@ -8,7 +8,7 @@ export const routeNames = {
   customers: "/customers",
   reports: "/reports",
   settings: "/settings",
-  newproducts:"/products",
+  newproducts:"/Productpost",
   categories:( categoryID)=>`/categories/${categoryID}`,
   newCategory:"/categories/new",
   newBrands:"/brands/new",

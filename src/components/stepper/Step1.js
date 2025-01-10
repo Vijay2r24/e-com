@@ -69,15 +69,15 @@ const Step1 = ({ updateFormData, productData }) => {
   useEffect(() => {
     if (editMode) {
       setStepOneData({
-        ProductTypeID: productData.productType.productTypeId || '',
+        ProductTypeID: productData.productTypeId || '',
         ProductName: productData.productName || '',
         ProductDiscount: productData.productDiscount ? productData.productDiscount.replace('%', '') : '',
         ProductDescription: productData.productDescription || '',
         Gender: productData.gender || '',
-        CategoryID: productData.category.categoryId || '',
-        CategoryName: productData.category.categoryName || '',
-        BrandID: productData.brand.brandId || '',
-        BrandName: productData.brand.brandName || '',
+        CategoryID: productData.categoryId || '',
+        CategoryName: productData.categoryName || '',
+        BrandID: productData.brandId || '',
+        BrandName: productData.brandName || '',
         MRP: productData.MRP || '',
         CreatedBy: "Admin",  // assuming this remains constant
         UpdatedBy: "admin",

@@ -37,31 +37,39 @@ function Home() {
     // Initialize FormData
     const data = new FormData();
   
-    console.log("stepOneData", formData.stepOneData);
-    // Combine all step data into one object
-    const { stepOneData, stepTwoData, stepThreeData,imagesData } = formData;
-    const formDataObject = {
-      ...stepOneData,
-      ...stepThreeData,
-      Colors: stepTwoData,
-    };
+    // Append product data to FormData
+    data.append("Data", JSON.stringify({
+      ProductTypeID: formData.productTypeID,
+      ProductName: formData.productName,
+      ProductDescription: formData.description,
+      ProductDiscount: "10", // Replace with dynamic value
+      Gender: formData.gender,
+      CategoryID: formData.categoryID,
+      CategoryName: formData.categoryName,
+      BrandID: formData.brandID,
+      BrandName: formData.brandName,
+      MRP: "33", // Replace with dynamic value
+      CreatedBy: "Admin", // Replace with dynamic value
+      TenantID: 1, // Replace with dynamic value
+      Colors: formData.colorData.Colors.map((color) => ({
+        ColourID: color.ColourID,
+        Sizes: color.Sizes.map((size) => ({
+          SizeID: size.SizeID,
+          Quantity: size.Quantity,
+        })),
+      })),
+    }));
   
-    // Append the entire object as a JSON string to FormData under the "Data" key
-    data.append("Data", JSON.stringify(formDataObject));
+    // Append images for each color
+    formData.colorData.Colors.forEach((color, colorIndex) => {
+      // Filter images for the current color
+      const colorImages = formData.images.filter((img) => img.colorID === color.ColourID);
   
-    // Handle image uploads (assuming stepTwoData contains images)
-    imagesData.forEach((variant, index) => {
-      if (variant.images && variant.images.length > 0) {
-        variant.images.forEach((image, imgIndex) => {
-          data.append(`images_${index}`, image); // Append images
-        });
-      }
+      // Append each image for the current color
+      colorImages.forEach((img, imgIndex) => {
+        data.append(`images_${colorIndex}`, img.file); // Append image file with the corresponding index
+      });
     });
-  
-    // Debugging: Log FormData content
-    for (let pair of data.entries()) {
-      console.log(`${pair[0]}:`, pair[1]);
-    }
   
     // Axios POST request
     try {

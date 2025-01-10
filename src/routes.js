@@ -37,7 +37,10 @@ import SingleProduct from "./components/singleProduct/product";
 import Profile from "./components/Profile/profile";
 import StoreList from "./components/Stores/storeList";
 import StoreAdd from "./components/Stores/storeForm";
-import BannerImage from "./components/BannerImages/bannerImage"
+import BannerImage from "./components/BannerImages/bannerImage";
+import ProductPosting from "./components/singleProduct/productPosting";
+import UserForm from "./components/UserRoles/userForm";
+import PushNotification from "./components/PushNotification/index";
 
 
 
@@ -67,7 +70,15 @@ const AppRoutes = () => {
           element:<Profile/>,
         },
         {
-          path:"/singleProduct",
+          path:"/PushNotification",
+          element:<PushNotification />,
+        },
+        {
+          path:"/ProductPosting",
+          element:<ProductPosting/>,
+        },
+        {
+          path:"/Productpost",
           element:<SingleProduct />
         },
         {
@@ -77,6 +88,10 @@ const AppRoutes = () => {
         {
           path:"/storeAdd",
           element:<StoreAdd />
+        },
+        {
+          path:"/UserForm",
+          element:<UserForm />
         },
         {
           path:"/BannerImage",
@@ -222,7 +237,7 @@ const AppRoutes = () => {
         },
         {
           path: "/products/:ProductId",
-          element: <Products />,
+          element: <SingleProduct />,
         },
         {
           path: "/editProductType/:ProductTypeID",
