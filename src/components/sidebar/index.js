@@ -31,7 +31,7 @@ const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
     { icon: <FaUser />, label: "Profile", path: "/Profile" },
     { icon: <FaUsers />, label: "Users", path: "/UserList" },
     { icon: <FaStore />, label: "Stores", path: "/storeList" },
-    { icon: <FaBell />, label: "Push Notifications", path: "/UserList" },
+    { icon: <FaBell />, label: "Push Notifications", path: "/PushNotification" },
   ];
 
   return (
