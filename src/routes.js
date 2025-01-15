@@ -41,10 +41,22 @@ import BannerImage from "./components/BannerImages/bannerImage";
 import ProductPosting from "./components/singleProduct/productPosting";
 import UserForm from "./components/UserRoles/userForm";
 import PushNotification from "./components/PushNotification/index";
-
+import Ordergrid from "./components/Orders/ordersgrid";
+import BannerForm from "./components/Dynamic_Banner_Image/banner_Image";
+import  ExpoSnackEmbed from "./ExpoSnackEmbed";
 
 
 const AppRoutes = () => {
+  const snackData = {
+    snackId: '@sravani-ch/textinput-example',
+    platform: 'web',
+    preview: true,
+    theme: 'light',
+    style: {
+      height: '600px', // Custom height for the embed
+      width: '100%',
+    },
+  };
   return useRoutes([
     {
       path: "/",
@@ -94,6 +106,10 @@ const AppRoutes = () => {
           element:<UserForm />
         },
         {
+          path:"/Ordergrid",
+          element:<Ordergrid />
+        },
+        {
           path:"/BannerImage",
           element:<BannerImage />
         },
@@ -112,6 +128,15 @@ const AppRoutes = () => {
         {
           path: "/UserAdd",
           element: <UserAdd/>,
+        },
+        {
+          path:"/bannerform",
+          element:<BannerForm/>
+        },
+      
+        {
+          path:"/dynamicui",
+          element:<ExpoSnackEmbed snackData={snackData} />
         },
         {
           path: "/Browse",

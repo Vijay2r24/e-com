@@ -20,6 +20,7 @@ import { GiShoppingBag } from 'react-icons/gi';
 import { AiOutlineUsergroupAdd } from 'react-icons/ai'; 
 import Logo from "../../assets/images/logo.png";
 import { MdOutlineEditNotifications } from "react-icons/md";
+import { MdOutlineDynamicFeed } from "react-icons/md";
 
 const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
   const sidebarItems = [
@@ -32,6 +33,8 @@ const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
     { icon: <FaUsers />, label: "Users", path: "/UserList" },
     { icon: <FaStore />, label: "Stores", path: "/storeList" },
     { icon: <FaBell />, label: "Push Notifications", path: "/PushNotification" },
+    { icon: <MdOutlineDynamicFeed /> , label: "Dynamic UI", path:"/dynamicui" },
+    { icon: <MdAssessment />, label: "Banner Form", path:"/bannerform" }
   ];
 
   return (
