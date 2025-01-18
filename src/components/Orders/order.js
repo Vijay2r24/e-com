@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Paper } from "@mui/material";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEye, FaTrash } from "react-icons/fa";
 import SearchBar from "../search_bar";
 import { useNavigate } from 'react-router-dom';
-import {getAllOrders} from '../../Constants/apiRoutes'
+import { getAllOrders } from '../../Constants/apiRoutes'
 import {
   StyledTableCell,
   StyledTableRow,
@@ -13,41 +13,44 @@ import {
 const OrderTable = () => {
   const [order, setOrder] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
-  
-  useEffect(() => {
-    fetch(getAllOrders)
-      .then(response => response.json())
-      .then(data => {
-        setFilteredOrders(Array.isArray(data.data) ? data.data : []);
-      });
-  }, []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const navigate = useNavigate();
-  const handleAddOrderClick = () => {
-    navigate('/orders');
-  };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  useEffect(() => {
+    fetch(getAllOrders) // Replace with your actual API URL
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Fetched data:", data);
+        setOrder(Array.isArray(data.data) ? data.data : []);
+        setFilteredOrders(Array.isArray(data.data) ? data.data : []);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
-  const [searchQuery, setSearchQuery] = useState("");
   useEffect(() => {
     const filteredOrders = Array.isArray(order)
-      ? order.filter(order =>
-          (order.OrderNumber && order.OrderNumber.toLowerCase().includes(searchQuery.toLowerCase())) ||
-          (order.CustomerName && order.CustomerName.toLowerCase().includes(searchQuery.toLowerCase()))
+      ? order.filter((order) =>
+          (order.orderId && order.orderId.toString().includes(searchQuery.toLowerCase())) || 
+          (order.customer && `${order.customer.firstName} ${order.customer.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()))
         )
       : [];
     setFilteredOrders(filteredOrders);
   }, [searchQuery, order]);
+  
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage + 1); // Convert zero-based index to one-based
+  };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentOrders = Array.isArray(filteredOrders) ? filteredOrders.slice(indexOfFirstItem, indexOfLastItem) : [];
-  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const handleRowsPerPageChange = (event) => {
+    setItemsPerPage(parseInt(event.target.value, 10));
+    setCurrentPage(1); // Reset to the first page
+  };
 
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
+  const handleAddOrderClick = (orderId) => {
+    navigate(`/ViewOrder/${orderId}`);
   };
 
   const openModal = (type, order) => {
@@ -57,6 +60,10 @@ const OrderTable = () => {
   const closeModal = () => {
     // Close modal logic
   };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentOrders = Array.isArray(filteredOrders) ? filteredOrders.slice(indexOfFirstItem, indexOfLastItem) : [];
 
   return (
     <div className="overflow-x-auto">
@@ -78,37 +85,46 @@ const OrderTable = () => {
           </TableHead>
           <TableBody>
             {currentOrders.map((order) => (
-              <StyledTableRow key={order.OrderID}>
-                <StyledTableCell>{order.OrderID}</StyledTableCell>
-                <StyledTableCell>{new Date(order.OrderDate).toLocaleDateString()}</StyledTableCell>
+              <StyledTableRow key={order.orderId}>
+                <StyledTableCell>{order.orderId}</StyledTableCell>
+                <StyledTableCell>{new Date(order.orderDate).toLocaleDateString()}</StyledTableCell>
                 <StyledTableCell>
                   <div>
-                    <div>Name: <strong>{order.CustomerName || 'Unknown'}</strong></div>
-                    <div>Phone: {order.Phone || 'N/A'}</div>
+                    <div>
+                      Name: <strong>{order.customer?.firstName || "Unknown"} {order.customer?.lastName || "Unknown"}</strong>
+                    </div>
+                    <div>Email: {order.customer?.email || "N/A"}</div>
                   </div>
                 </StyledTableCell>
                 <StyledTableCell>
                   <div>
-                    <div>Delivery Date: {new Date(order.DeliveryDate).toLocaleDateString()}</div>
-                    <div>Amount: &#8377;{parseFloat(order.TotalAmount).toFixed(2)}</div>
+                    <div>Amount: &#8377;{parseFloat(order.totalAmount).toFixed(2)}</div>
+                    <div>Created At: {new Date(order.createdAt).toLocaleDateString()}</div>
                   </div>
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  <span>{order.OrderStatus}</span>
+                  <span>
+                    {order.orderHistory?.length > 0
+                      ? order.orderHistory
+                          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0].status
+                      : "Pending"}
+                  </span>
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   <div className="flex justify-center space-x-2">
                     <button
-                      onClick={() => openModal("edit", order)}
-                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => handleAddOrderClick(order.orderId)}
+                      className="flex items-center text-blue-500 hover:text-blue-700 space-x-1"
                     >
-                      <FaEdit />
+                      <FaEye />
+                      <span>View</span>
                     </button>
                     <button
                       onClick={() => openModal("delete", order)}
-                      className="text-red-500 hover:text-red-700"
+                      className="flex items-center text-red-500 hover:text-red-700 space-x-1"
                     >
                       <FaTrash />
+                      <span>Delete</span>
                     </button>
                   </div>
                 </StyledTableCell>
@@ -117,20 +133,18 @@ const OrderTable = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
       {/* Pagination */}
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
         count={filteredOrders.length}
         rowsPerPage={itemsPerPage}
-        page={currentPage - 1}
+        page={currentPage - 1} // Convert one-based index to zero-based
         onPageChange={handlePageChange}
-        onRowsPerPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
       />
     </div>
   );
 };
 
 export default OrderTable;
-

@@ -167,7 +167,7 @@ const UsersPage = () => {
                   <StyledTableCell>{user.Email}</StyledTableCell>
                   <StyledTableCell>{user.PhoneNumber}</StyledTableCell>
                   <StyledTableCell>{user.role}</StyledTableCell>
-                  <StyledTableCell>{user.gender}</StyledTableCell>
+                  <StyledTableCell>{user.Gender}</StyledTableCell>
                   <StyledTableCell>
                     <div className="flex justify-start space-x-2">
                       <button
@@ -205,7 +205,7 @@ const UsersPage = () => {
               <p className="text-gray-600 font-medium text-sm">{user.Email}</p>
               <p className="text-gray-600 text-sm">{user.PhoneNumber}</p>
               <p className="text-gray-600 text-sm">{user.role}</p>
-              <p className="text-gray-600 text-sm">{user.gender}</p>
+              <p className="text-gray-600 text-sm">{user.Gender}</p>
             </div>
       
             {/* Buttons: Positioned in the top-right corner, stacked vertically */}

@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { Combobox } from "@headlessui/react";
-import { ToastContainer } from "react-toastify";
-import { FiTrash, FiEye } from "react-icons/fi";
-import { RiCloseLine } from "react-icons/ri";
+import { postStore, getStoreById } from "../../Constants/apiRoutes";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useParams } from "react-router-dom";
+import axios from 'axios';
 
 const UserForm = () => {
+  const { storeId } = useParams();
   const [formData1, setFormData1] = useState({
     StoreID: null,
     StoreName: "",
@@ -25,6 +28,10 @@ const UserForm = () => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [storeData, setStoreData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [editMode, setEditMode] = useState(false);
 
   const countries = [{ CountryID: 1, CountryName: "USA" }, { CountryID: 2, CountryName: "Canada" }];
   const filteredStates = [{ StateID: 1, StateName: "California" }, { StateID: 2, StateName: "Ontario" }];
@@ -69,11 +76,104 @@ const UserForm = () => {
     setShowPassword((prev) => !prev);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validation logic and submit
-  };
 
+    // Prepare the payload
+    const payload = {
+      TenantID: 1,
+      StoreName: formData1.StoreName,
+      Email: formData1.Email,
+      Phone: formData1.Phone,
+      AddressLine1: formData1.AddressLine1,
+      AddressLine2: formData1.AddressLine2,
+      CityID: parseInt(formData1.CityID, 10),
+      StateID: parseInt(formData1.StateID, 10),
+      CountryID: parseInt(formData1.CountryID, 10),
+      ZipCode: formData1.ZipCode,
+      CreatedBy: 1,
+      UpdatedBy: 1,
+    };
+
+    // Add StoreID to the payload if in edit mode
+    if (editMode && formData1.StoreID) {
+      payload.StoreID = formData1.StoreID;
+    }
+
+    try {
+      const response = await fetch(postStore, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json(); // Parse JSON response
+      if (response.ok) {
+        // Show the message from the API response
+        toast.success(result.message || "Store saved successfully!");
+        console.log("Success:", result);
+      } else {
+        // Show the error message from the API response
+        toast.error(result.message || `Failed to save store. Error: ${response.statusText}`);
+        console.error("Error:", result);
+      }
+    } catch (error) {
+      // Handle network or unexpected errors
+      toast.error("An error occurred while sending data.");
+      console.error("Error:", error);
+    }
+  };
+  useEffect(() => {
+    if (storeId) {
+      axios
+        .get(`${getStoreById}/${storeId}`)
+        .then((response) => {
+          if (response.data.StatusCode === "SUCCESS") {
+            setStoreData(response.data.store);
+          } else {
+            setError("Failed to load store data");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching store data:", error);
+          setError("An error occurred while fetching store data");
+        });
+    }
+  }, [storeId]);
+
+  // Monitor storeData changes
+  useEffect(() => {
+    if (storeData) {
+      console.log("Updated storeData:", storeData);
+    }
+  }, [storeData]);
+
+  useEffect(() => {
+    if (storeId) {
+      setEditMode(Boolean(storeId)); // Set editMode based on categoryData
+    }
+  }, [storeId]);
+  useEffect(() => {
+    if (editMode && storeData) { // Ensure storeData is not null or undefined
+      setFormData1({
+        StoreID: storeData.StoreID || "",
+        StoreName: storeData.StoreName || "",
+        Email: storeData.Email || "",
+        Phone: storeData.Phone || "",
+        AddressLine1: storeData.AddressLine1 || "",
+        AddressLine2: storeData.AddressLine2 || "",
+        CityID: "",
+        StateID: "",
+        CountryID: "",
+        ZipCode: storeData.ZipCode || "",
+        imagePreview: "",
+        Password: "",
+        ConfirmPassword: "",
+      });
+    }
+  }, [editMode, storeData]);
   return (
     <div className="flex flex-col space-y-6 p-6 max-w-6xl mx-auto bg-white rounded-lg border border-gray-300">
       <ToastContainer />
@@ -113,7 +213,7 @@ const UserForm = () => {
           />
           {errors.Email && <p className="text-red-500 text-sm mt-1">{errors.Email}</p>}
         </div>
-      {/* Phone Number Field */}
+        {/* Phone Number Field */}
         <div className="w-full">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Phone Number <span className="text-red-500">*</span>
@@ -246,8 +346,8 @@ const UserForm = () => {
           </Combobox>
         </div>
       </div>
-   {/* Zip Code Field */}
-   <div className="flex gap-4 mt-4">
+      {/* Zip Code Field */}
+      <div className="flex gap-4 mt-4">
         <div className="w-full">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Zip Code <span className="text-red-500">*</span>
@@ -271,8 +371,9 @@ const UserForm = () => {
           className="w-full bg-pacific-500 text-white py-2 px-4 rounded-md hover:bg-pacific-600"
           onClick={handleSubmit}
         >
-          Submit
+          {editMode ? "Update" : "Submit"}
         </button>
+
       </div>
     </div>
   );

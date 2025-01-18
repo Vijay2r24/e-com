@@ -44,6 +44,7 @@ import PushNotification from "./components/PushNotification/index";
 import Ordergrid from "./components/Orders/ordersgrid";
 import BannerForm from "./components/Dynamic_Banner_Image/banner_Image";
 import  ExpoSnackEmbed from "./ExpoSnackEmbed";
+import SilentNotification from "./components/PushNotification/silentnotification"
 
 
 const AppRoutes = () => {
@@ -82,6 +83,10 @@ const AppRoutes = () => {
           element:<Profile/>,
         },
         {
+          path:"/silentNotification",
+          element:<SilentNotification />,
+        },
+        {
           path:"/PushNotification",
           element:<PushNotification />,
         },
@@ -102,11 +107,15 @@ const AppRoutes = () => {
           element:<StoreAdd />
         },
         {
+          path:"/StoreEdit/:storeId",
+          element:<StoreAdd />
+        },
+        {
           path:"/UserForm",
           element:<UserForm />
         },
         {
-          path:"/Ordergrid",
+          path:"/ViewOrder/:orderId",
           element:<Ordergrid />
         },
         {

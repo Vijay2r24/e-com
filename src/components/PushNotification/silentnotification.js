@@ -34,7 +34,6 @@ const AddProject = () => {
         formData.append('title', formData1.projectName);
         formData.append('body', formData1.description);
         formData.append('Notificationimage', formData1.imageFile);
-    
         try {
             const response = await fetch('http://156.67.111.32:3050/api/sendnotifications', {
                 method: 'POST',
@@ -109,11 +108,11 @@ const AddProject = () => {
             {/* {loading && <LoadingAnimation />} */}
             <div className="flex items-center mb-4">
                 <img src={pushnotification} alt="Notification Icon" className="w-8 h-8 mr-2" />
-                <h1 className="text-xl font-semibold text-gray-800">Push Notification</h1>
+                <h1 className="text-xl font-semibold text-gray-800">silent Notification </h1>
             </div>
             <div className="mt-8 w-full">
                 <label className="block font-semibold mb-4 text-left">
-                    Title <span className="text-red-500">*</span>:
+                    Component Name <span className="text-red-500">*</span>:
                     <input
                         type="text"
                         name="projectName"
@@ -127,7 +126,7 @@ const AddProject = () => {
                 {/* Description */}
                 <div>
                     <label className="block font-semibold mb-4 text-left">
-                        Message:
+                        json:
                     </label>
                     <textarea
                         name="description"
@@ -139,7 +138,7 @@ const AddProject = () => {
                     />
                 </div>
                 {/* Upload Image */}
-                <div className="mb-4 flex flex-col items-start">
+                {/* <div className="mb-4 flex flex-col items-start">
                     <label className="block font-semibold text-right mb-2">
                         Upload Image:
                     </label>
@@ -175,11 +174,11 @@ const AddProject = () => {
                             </div>
                         )}
                     </div>
-                </div>
+                </div> */}
 
 
                 {/* Modal to view image */}
-                {isModalOpen && (
+                {/* {isModalOpen && (
                     <div className="fixed inset-0 flex items-center z-10 justify-center bg-black bg-opacity-50">
                         <div className="bg-white p-4 rounded-md relative" style={{ width: '500px', height: '500px' }}>
                             <button
@@ -195,7 +194,7 @@ const AddProject = () => {
                             />
                         </div>
                     </div>
-                )}
+                )} */}
                 <button
                     onClick={handleSubmit}
                     disabled={loading}

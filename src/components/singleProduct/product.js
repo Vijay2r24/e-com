@@ -73,7 +73,7 @@ const AddProductPhoto = () => {
     const files = Array.from(event.target.files);
 
     if (!formData.selectedColorID) {
-      setDialogContent("Please select a color before uploading images.");
+      setDialogContent("Please select a variant before uploading images.");
       setIsDialogOpen(true);
       return;
     }
@@ -411,9 +411,9 @@ const AddProductPhoto = () => {
           }
           return acc;
         }, {});
-  
+
         console.log("Grouped Images by Color ID:", colorImages);
-  
+
         // Function to fetch image as blob and create File
         const fetchImageAsFile = async (url, colorID, index) => {
           try {
@@ -429,7 +429,7 @@ const AddProductPhoto = () => {
             return null;
           }
         };
-  
+
         // Iterate over colorImages to create File objects
         const imagesWithFiles = [];
         for (const [colorID, urls] of Object.entries(colorImages)) {
@@ -445,18 +445,18 @@ const AddProductPhoto = () => {
             }))
           );
         }
-  
+
         // Update formData and handle selected colors
         setFormData((prevData) => {
           const newSelectedColors = productData.variants
             .filter((variant) => variant.images && variant.colourId)
             .map((variant) => variant.colourId);
-  
+
           // Update the selected colors
           setSelectedColors((prev) => [
             ...new Set([...prev, ...newSelectedColors]), // Add unique colors to the selected list
           ]);
-  
+
           return {
             ...prevData,
             productName: productData.productName || "",
@@ -484,6 +484,7 @@ const AddProductPhoto = () => {
                 })),
                 Images: colorImages[variant.colourId] || [], // Keep URLs if needed
               })),
+              selectedColorID: 1,
               assignedIndex: null,
             },
             images: imagesWithFiles, // Assign File objects with colorID and preview
@@ -491,11 +492,11 @@ const AddProductPhoto = () => {
         });
       }
     };
-  
+
     // Call the async function
     convertImagesToFiles();
   }, [editMode, productData]);
-  
+
 
 
   const handleCloseModal = () => {
@@ -773,23 +774,23 @@ const AddProductPhoto = () => {
             {/* Header */}
             <h2 className="text-lg font-medium text-gray-800">Add Product Photos</h2>
             <div className="flex flex-wrap gap-2 mt-2">
-            {selectedColors.map((colorID) => {
-              const color = colors.find((c) => c.ColourID === colorID);
-              return (
-                <div
-                  key={colorID}
-                  className={`w-10 h-10 flex items-center justify-center rounded-lg cursor-pointer transition-all transform duration-300 ease-in-out border-2 shadow-lg ${selectedColorID === colorID ? 'border-blue-600  shadow-blue-200 scale-110' : 'bg-gray-100 hover:scale-110 hover:bg-gray-200'
-                    }`}
-                  onClick={() => handleColorSelect(colorID)}
-                >
+              {selectedColors.map((colorID) => {
+                const color = colors.find((c) => c.ColourID === colorID);
+                return (
                   <div
-                    className="w-5 h-5 rounded-full"
-                    style={{ backgroundColor: color?.HexCode }}
-                    title={color?.ColorName}
-                  ></div>
-                </div>
-              );
-            })}
+                    key={colorID}
+                    className={`w-10 h-10 flex items-center justify-center rounded-lg cursor-pointer transition-all transform duration-300 ease-in-out border-2 shadow-lg ${selectedColorID === colorID ? 'border-blue-600  shadow-blue-200 scale-110' : 'bg-gray-100 hover:scale-110 hover:bg-gray-200'
+                      }`}
+                    onClick={() => handleColorSelect(colorID)}
+                  >
+                    <div
+                      className="w-5 h-5 rounded-full"
+                      style={{ backgroundColor: color?.HexCode }}
+                      title={color?.ColorName}
+                    ></div>
+                  </div>
+                );
+              })}
             </div>
             {/* Drop Area */}
             <div className="mt-6 border-2 border-dashed border-gray-300 rounded-lg p-4 relative">
@@ -1238,8 +1239,11 @@ const AddProductPhoto = () => {
                   onClick={() => setIsColorPickerVisible((prev) => !prev)}
                   title="Add Colors"
                 >
-                  <span className="text-lg text-blue-600 font-bold">+</span> {/* "+" sign for add */}
+                  <span className="text-lg text-blue-600 font-bold">
+                    {isColorPickerVisible ? '-' : '+'}
+                  </span> {/* Toggle between "+" and "-" */}
                 </button>
+
 
                 {/* Color Picker Visibility */}
                 {isColorPickerVisible && (

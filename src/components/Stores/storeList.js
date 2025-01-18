@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash,FaTable } from "react-icons/fa";
 import { MdOutlineCancel } from "react-icons/md";
 import SearchBar from "../search_bar";
 import { ToastContainer, toast } from "react-toastify";
 import { MdEdit } from "react-icons/md";
-
+import {getAllStores} from "../../Constants/apiRoutes";
 import "react-toastify/dist/ReactToastify.css";
 import {
   Table,
@@ -23,40 +24,39 @@ import {
 } from "../CustomTablePagination"; // Assuming you have custom pagination components
 
 const UsersPage = () => {
-  const [stores, setStores] = useState([
-    {
-      id: 1,
-      storeName: "Store A",
-      email: "storea@example.com",
-      phone: "123-456-7890",
-      address: "123 A Street, City, State, 12345",
-    },
-    {
-      id: 2,
-      storeName: "Store B",
-      email: "storeb@example.com",
-      phone: "987-654-3210",
-      address: "456 B Avenue, City, State, 67890",
-    },
-    {
-      id: 3,
-      storeName: "Store C",
-      email: "storec@example.com",
-      phone: "555-555-5555",
-      address: "789 C Road, City, State, 11223",
-    },
-  ]);
-
+  const [stores, setStores] = useState([]);
   const [viewMode, setViewMode] = useState("table");
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 10;
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    // Fetch stores data
+    const fetchStores = async () => {
+      try {
+        const response = await fetch(getAllStores);
+        const data = await response.json();
 
+        if (data.StatusCode === "SUCCESS") {
+          setStores(data.Stores);
+        } else {
+          setError("Failed to fetch stores");
+        }
+      } catch (err) {
+        setError("An error occurred while fetching stores");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStores();
+  }, []);
   // Filter and Paginate Stores
   const filteredStores = stores.filter((store) =>
-    store.storeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    store.email.toLowerCase().includes(searchQuery.toLowerCase())
+    store.StoreName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    store.Email.toLowerCase().includes(searchQuery.toLowerCase())
   );
   const totalPages = Math.ceil(filteredStores.length / itemsPerPage);
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
@@ -119,22 +119,22 @@ const UsersPage = () => {
             </TableHead>
             <TableBody>
               {currentStores.map((store) => (
-                <StyledTableRow key={store.id}>
-                  <StyledTableCell>{store.storeName}</StyledTableCell>
-                  <StyledTableCell>{store.email}</StyledTableCell>
-                  <StyledTableCell>{store.phone}</StyledTableCell>
-                  <StyledTableCell>{store.address}</StyledTableCell>
+                <StyledTableRow key={store.StoreID}>
+                  <StyledTableCell>{store.StoreName}</StyledTableCell>
+                  <StyledTableCell>{store.Email}</StyledTableCell>
+                  <StyledTableCell>{store.Phone}</StyledTableCell>
+                  <StyledTableCell>{store.AddressLine1}</StyledTableCell>
                   <StyledTableCell>
                     <div className="flex justify-start space-x-2">
                       <button
-                        onClick={() => handleEdit(store.id)}
+                        onClick={() => handleEdit(store.StoreID)}
                         className="button edit-button flex items-center space-x-1"
                       >
                         <FaEdit aria-hidden="true" className="h-4 w-4" />
                         <span>Edit</span>
                       </button>
                       <button
-                        onClick={() => handleDelete(store.id)}
+                        onClick={() => handleDelete(stores.StoreID)}
                         className="button delete-button flex items-center space-x-1"
                       >
                         <MdOutlineCancel aria-hidden="true" className="h-4 w-4 font-small" />
@@ -152,10 +152,10 @@ const UsersPage = () => {
           {currentStores.map((store) => (
             <div key={store.id} className="bg-white rounded-lg p-6 border border-gray-200 relative">
               <div className="text-center">
-                <h3 className="text-xl font-semibold text-gray-800">{store.storeName}</h3>
-                <p className="text-gray-600 text-sm">{store.email}</p>
-                <p className="text-gray-600 text-sm">{store.phone}</p>
-                <p className="text-gray-600 text-sm">{store.address}</p>
+                <h3 className="text-xl font-semibold text-gray-800">{store.StoreName}</h3>
+                <p className="text-gray-600 text-sm">{store.Email}</p>
+                <p className="text-gray-600 text-sm">{store.Phone}</p>
+                <p className="text-gray-600 text-sm">{store.AddressLine1}</p>
               </div>
               {/* Buttons: Positioned in the top-right corner, stacked vertically */}
               <div className="absolute top-4 right-4 flex flex-col gap-2">
