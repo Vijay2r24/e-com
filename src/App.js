@@ -7,6 +7,7 @@ import { DataProvider } from '../src/components/Context/SizeContext';
 import { ColorProvider } from '../src/components/Context/ColorContext';
 import {ProductTypesProvider}from '../src/components/Context/AllProductTypesContext';
 import TawkToWidget from'../src/components/tawk/TawkToWidget';
+import LocationDataProvider  from "../src/components/Context/DataContext";
 
 function App() {
   return (
@@ -16,7 +17,9 @@ function App() {
           <DataProvider>
           <ColorProvider>
           <ProductTypesProvider>
+          <LocationDataProvider>
               <AppRoutes />
+              </LocationDataProvider>
               </ProductTypesProvider>
             </ColorProvider>
           </DataProvider>

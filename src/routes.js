@@ -44,7 +44,8 @@ import PushNotification from "./components/PushNotification/index";
 import Ordergrid from "./components/Orders/ordersgrid";
 import BannerForm from "./components/Dynamic_Banner_Image/banner_Image";
 import  ExpoSnackEmbed from "./ExpoSnackEmbed";
-import SilentNotification from "./components/PushNotification/silentnotification"
+import SilentNotification from "./components/PushNotification/silentnotification";
+import Notifications from "./components/PushNotification/Home";
 
 
 const AppRoutes = () => {
@@ -86,10 +87,10 @@ const AppRoutes = () => {
           path:"/silentNotification",
           element:<SilentNotification />,
         },
-        {
-          path:"/PushNotification",
-          element:<PushNotification />,
-        },
+        // {
+        //   path:"/PushNotification",
+        //   element:<PushNotification />,
+        // },
         {
           path:"/ProductPosting",
           element:<ProductPosting/>,
@@ -146,6 +147,21 @@ const AppRoutes = () => {
         {
           path:"/dynamicui",
           element:<ExpoSnackEmbed snackData={snackData} />
+        },
+        {
+          path: "/Notifications",
+          element: <Notifications />,
+          children: [
+            {
+              path: "pushNotification",
+              element: <PushNotification />,
+            },
+            {
+              path: "silentNotification",
+              element: <SilentNotification />,
+            },
+            
+          ],
         },
         {
           path: "/Browse",

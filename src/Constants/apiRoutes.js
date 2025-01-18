@@ -31,3 +31,6 @@ export const getOrderById=`${BASE_URL}/getOrderById`;
 export const postStore=`${BASE_URL}/createOrUpdateStore`;
 export const getAllStores=`${BASE_URL}/getAllStores`;
 export const getStoreById=`${BASE_URL}/getStoreById`;
+export const CITIES_API=`${BASE_URL}/getCitiesByState`;
+export const STATES_API=`${BASE_URL}/getStatesByCountry`;
+export const COUNTRIES_API=`${BASE_URL}/getCountries`;

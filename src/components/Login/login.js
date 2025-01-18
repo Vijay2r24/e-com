@@ -5,16 +5,42 @@ import loginBanner from "../../assets/images/Frame 15.png";
 import cart from "../../assets/images/cart-148964_1280 1.png";
 import {jwtDecode} from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import {COUNTRIES_API,STATES_API,CITIES_API} from "../../Constants/apiRoutes"
 
 // Example function definitions if you haven't defined them elsewhere
-const fetchApiData = async () => {
-  console.log('Fetching API data...');
-};
+// const fetchApiData = async () => {
+//   console.log('Fetching API data...');
+// };
 
 const fetchAndStoreStoresData = async () => {
   console.log('Fetching and storing stores data...');
 };
+const fetchApiData = async () => {
+  const storedCitiesData = localStorage.getItem("citiesData");
+  const storedStatesData = localStorage.getItem("statesData");
+  const storedCountriesData = localStorage.getItem("countriesData");
 
+  if (!storedCitiesData || !storedStatesData || !storedCountriesData) {
+    try {
+      const resCities = storedCitiesData
+        ? JSON.parse(storedCitiesData)
+        : await fetch(CITIES_API).then((res) => res.json());
+      const resStates = storedStatesData
+        ? JSON.parse(storedStatesData)
+        : await fetch(STATES_API).then((res) => res.json());
+      const resCountries = storedCountriesData
+        ? JSON.parse(storedCountriesData)
+        : await fetch(COUNTRIES_API).then((res) => res.json());
+
+      // Store in localStorage
+      localStorage.setItem("citiesData", JSON.stringify(resCities));
+      localStorage.setItem("statesData", JSON.stringify(resStates));
+      localStorage.setItem("countriesData", JSON.stringify(resCountries));
+    } catch (error) {
+      console.error("Error fetching API data:", error);
+    }
+  }
+};
 const LoginScreen = () => {
   const [slideIn, setSlideIn] = useState(false);
   const [userName, setUserName] = useState("");
@@ -44,7 +70,7 @@ const LoginScreen = () => {
       );
 
       const data = await response.json();
-
+      await Promise.all([fetchApiData()]);
       if (response.ok) {
         const { token } = data;
         const decodedToken = jwtDecode(token);

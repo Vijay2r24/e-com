@@ -34,7 +34,6 @@ const AddProject = () => {
         formData.append('title', formData1.projectName);
         formData.append('body', formData1.description);
         formData.append('Notificationimage', formData1.imageFile);
-    
         try {
             const response = await fetch('http://156.67.111.32:3050/api/sendnotifications', {
                 method: 'POST',
@@ -104,7 +103,7 @@ const AddProject = () => {
         setIsModalOpen(false);
     };
     return (
-        <div className="flex flex-col space-y-4 p-4 max-w-6xl mx-auto bg-white rounded-lg border border-gray-300 items-start">
+        <div className="flex flex-col space-y-4 p-4 max-w-6xl mx-auto bg-white rounded-lg items-start">
             <ToastContainer />
             {/* {loading && <LoadingAnimation />} */}
             <div className="flex items-center mb-4">

@@ -29,15 +29,29 @@ const AddProject = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
     
-        // Create a FormData object
-        const formData = new FormData();
-        formData.append('title', formData1.projectName);
-        formData.append('body', formData1.description);
-        formData.append('Notificationimage', formData1.imageFile);
+        let parsedDataPayload;
+    
         try {
-            const response = await fetch('http://156.67.111.32:3050/api/sendnotifications', {
+            // Parse description to ensure it's a valid JSON object
+            parsedDataPayload = JSON.parse(formData1.description);
+        } catch (error) {
+            console.error('Invalid JSON in description:', error);
+            toast.error('Invalid JSON format in the description field');
+            return;
+        }
+    
+        const payload = {
+            componentName: formData1.projectName, // Assign projectName to componentName
+            dataPayload: parsedDataPayload,      // Use parsed description as dataPayload
+        };
+    
+        try {
+            const response = await fetch('https://electronic-ecommerce.onrender.com/api/notifications/silent', {
                 method: 'POST',
-                body: formData, // Pass FormData directly
+                headers: {
+                    'Content-Type': 'application/json', // Specify JSON content type
+                },
+                body: JSON.stringify(payload), // Convert payload to JSON string
             });
     
             if (response.ok) {
@@ -49,7 +63,8 @@ const AddProject = () => {
             console.error('An error occurred:', error);
             toast.error('An error occurred while sending notification');
         }
-    };    
+    };       
+       
     const validateForm = () => {
         const formErrors = {};
         if (!formData1.projectName.trim()) {
@@ -103,7 +118,7 @@ const AddProject = () => {
         setIsModalOpen(false);
     };
     return (
-        <div className="flex flex-col space-y-4 p-4 max-w-6xl mx-auto bg-white rounded-lg border border-gray-300 items-start">
+        <div className="flex flex-col space-y-4 p-4 max-w-6xl mx-auto bg-white rounded-lg  items-start">
             <ToastContainer />
             {/* {loading && <LoadingAnimation />} */}
             <div className="flex items-center mb-4">
@@ -137,64 +152,6 @@ const AddProject = () => {
                         style={{ height: '130px' }}
                     />
                 </div>
-                {/* Upload Image */}
-                {/* <div className="mb-4 flex flex-col items-start">
-                    <label className="block font-semibold text-right mb-2">
-                        Upload Image:
-                    </label>
-                    <div>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-                            ref={fileInputRef}
-                        />
-                        {formData1.imagePreview && (
-                            <div className="relative w-24 h-24 z-28 group overflow-hidden border rounded-md mt-2">
-                                <img
-                                    src={formData1.imagePreview}
-                                    alt="Preview"
-                                    className="object-cover w-full h-full"
-                                />
-                                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                    <button
-                                        onClick={handleDelete}
-                                        className="text-white bg-red-600 p-1 rounded-full mr-2"
-                                    >
-                                        <FiTrash size={14} title="Delete" />
-                                    </button>
-                                    <button
-                                        onClick={() => handleView()}
-                                        className="text-white bg-blue-600 p-1 rounded-full"
-                                    >
-                                        <FiEye size={14} />
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div> */}
-
-
-                {/* Modal to view image */}
-                {/* {isModalOpen && (
-                    <div className="fixed inset-0 flex items-center z-10 justify-center bg-black bg-opacity-50">
-                        <div className="bg-white p-4 rounded-md relative" style={{ width: '500px', height: '500px' }}>
-                            <button
-                                onClick={handleCloseModal}
-                                className="absolute top-2 right-2 flex items-center justify-center text-red-600 bg-red-50 rounded-md hover:bg-red-100 p-2"
-                            >
-                                <RiCloseLine size={18} />
-                            </button>
-                            <img
-                                src={formData1.imagePreview}
-                                // alt="Full View"
-                                className="w-full h-full object-contain"
-                            />
-                        </div>
-                    </div>
-                )} */}
                 <button
                     onClick={handleSubmit}
                     disabled={loading}

@@ -32,7 +32,7 @@ const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
     { icon: <FaUser />, label: "Profile", path: "/Profile" },
     { icon: <FaUsers />, label: "Users", path: "/UserList" },
     { icon: <FaStore />, label: "Stores", path: "/storeList" },
-    { icon: <FaBell />, label: "Notifications", path: "/PushNotification" },
+    { icon: <FaBell />, label: "Notifications", path: "/Notifications/pushNotification" },
     { icon: <MdOutlineDynamicFeed /> , label: "Dynamic UI", path:"/dynamicui" },
     // { icon: <MdAssessment />, label: "Banner Form", path:"/bannerform" }
   ];
