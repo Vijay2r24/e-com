@@ -79,6 +79,7 @@ const LoginScreen = () => {
         const TenantID = decodedToken.TenantID;
 
         localStorage.setItem("UserID", userID);
+        localStorage.setItem("token", token);
         localStorage.setItem("TenantID", TenantID);
         console.log("Logged-in UserID:", userID);
         console.log("Logged-in TenantID:", TenantID);

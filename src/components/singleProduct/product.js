@@ -13,14 +13,16 @@ import { ColorContext } from '../Context/ColorContext';
 import Blueshirt from '../../assets/images/no_Image.jpeg';
 import { ProductTypesContext } from '../Context/AllProductTypesContext';
 import { toast, ToastContainer } from 'react-toastify';
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import axios from 'axios';
 import { Editor } from "primereact/editor";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Typography } from "@mui/material";
 import { Warning as WarningIcon } from "@mui/icons-material";
-
+import LoadingAnimation from '../Loader/loader';
+import { useNavigate } from "react-router-dom";
 const AddProductPhoto = () => {
   const [selectedSize, setSelectedSize] = useState("M");
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedColor, setSelectedColor] = useState("black");
   const [selectedColourID, setSelectedColourID] = useState(null);
   const { categories, fetchAndStoreCategories } = useContext(CategoriesContext)
@@ -30,6 +32,7 @@ const AddProductPhoto = () => {
   const { productTypes, fetchAndStoreProductTypes } = useContext(ProductTypesContext);
   const { ProductId } = useParams();
   const [productData, setProductData] = useState(null);
+  const navigate = useNavigate();
   useEffect(() => {
     // Log the data when it changes
     console.log("Data from DataContext:", ProductId);
@@ -250,6 +253,7 @@ const AddProductPhoto = () => {
 
   const handleSubmit = async () => {
     // Initialize FormData
+    setIsLoading(true);
     const data = new FormData();
     // Append product data to FormData
     data.append("Data", JSON.stringify({
@@ -305,6 +309,12 @@ const AddProductPhoto = () => {
       });
 
       console.log("Response:", response.data);
+      const productId = response.data?.data?.newProduct?.ProductID;
+      console.log("productId",productId)
+      if (productId) {
+        // Navigate to the product details page
+        navigate(`/products/${productId}`);
+      }
     } catch (error) {
       console.error("Error uploading data:", error.response?.data || error.message);
       // Show error toast if the submission fails
@@ -318,9 +328,73 @@ const AddProductPhoto = () => {
         progress: undefined,
       });
     }
+    setIsLoading(false);
   };
+  const handleDeleteColor = (colorID) => {
+    // Remove the colorID from the selected colors
+    setSelectedColors((prevSelectedColors) =>
+      prevSelectedColors.filter((id) => id !== colorID)
+    );
+
+    // Update the formData to remove the color-related data
+    setFormData((prevFormData) => {
+      const updatedColors = prevFormData.colorData.Colors.filter(
+        (color) => color.ColourID !== colorID
+      );
+
+      const updatedImages = prevFormData.images.filter(
+        (image) => image.colorID !== colorID
+      );
+
+      return {
+        ...prevFormData,
+        colorData: {
+          ...prevFormData.colorData,
+          Colors: updatedColors,
+        },
+        images: updatedImages,
+      };
+    });
+
+    // Optionally reset the selected color if the deleted color is currently selected
+    setSelectedColorID((prevSelectedColorID) =>
+      prevSelectedColorID === colorID ? null : prevSelectedColorID
+    );
+  };
+  const handleDeleteSize = (sizeID) => {
+    // Find the selected color
+    const selectedColor = formData.colorData.Colors.find(
+      (color) => color.ColourID === formData.selectedColorID
+    );
+
+    if (selectedColor) {
+      // Filter out the size to be deleted
+      const updatedSizes = selectedColor.Sizes.filter(
+        (size) => size.SizeID !== sizeID
+      );
+
+      // Update the color data with the new sizes
+      const updatedColors = formData.colorData.Colors.map((color) =>
+        color.ColourID === formData.selectedColorID
+          ? { ...color, Sizes: updatedSizes }
+          : color
+      );
+
+      // Set the updated state
+      setFormData({
+        ...formData,
+        colorData: {
+          ...formData.colorData,
+          Colors: updatedColors,
+        },
+      });
+    }
+  };
+
+
   const handleUpdate = async () => {
     // Initialize FormData
+    setIsLoading(true);
     const data = new FormData();
 
     // Append product data to FormData
@@ -379,6 +453,7 @@ const AddProductPhoto = () => {
       });
 
       console.log("Response:", response.data);
+      fetchProductData();
     } catch (error) {
       console.error("Error updating data:", error.response?.data || error.message);
       // Show error toast if the update fails
@@ -392,6 +467,7 @@ const AddProductPhoto = () => {
         progress: undefined,
       });
     }
+    setIsLoading(false);
   };
   const [editMode, setEditMode] = useState(false);
   useEffect(() => {
@@ -399,6 +475,7 @@ const AddProductPhoto = () => {
       setEditMode(Boolean(productData?.productId)); // Set editMode based on categoryData
     }
   }, [productData]);
+
   useEffect(() => {
     const convertImagesToFiles = async () => {
       if (editMode && productData) {
@@ -484,18 +561,28 @@ const AddProductPhoto = () => {
                 })),
                 Images: colorImages[variant.colourId] || [], // Keep URLs if needed
               })),
-              selectedColorID: 1,
+              // selectedColorID: null,
               assignedIndex: null,
             },
             images: imagesWithFiles, // Assign File objects with colorID and preview
           };
         });
+
+        // Call handleColorSelect with the first color ID
+        const firstColorID = productData.variants.length > 0 ? productData.variants[0].colourId : null;
+        if (firstColorID !== null) {
+          handleColorSelect(firstColorID);
+          setSelectedColorID(firstColorID)
+        }
       }
     };
 
     // Call the async function
     convertImagesToFiles();
   }, [editMode, productData]);
+  const handleCancel = () => {
+    navigate('/all-products')
+  }
 
 
 
@@ -506,21 +593,26 @@ const AddProductPhoto = () => {
 
   const [selectedImage, setSelectedImage] = useState(null);
 
-  useEffect(() => {
-    if (!ProductId) return;
+ // Fetch updated product data
+const fetchProductData = () => {
+  fetch(`https://electronic-ecommerce.onrender.com/api/getProductById/${ProductId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.statusCode === "SUCCESS") {
+        setProductData(data.data);  // Set the product data on success
+        console.log("setProductData", data.data);  // Log the updated product data
+      } else {
+        console.error("Error fetching product data:", data.message);
+      }
+    })
+    .catch((error) => console.error("Error fetching data:", error));
+};
 
-    fetch(`https://electronic-ecommerce.onrender.com/api/getProductById/${ProductId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.statusCode === "SUCCESS") {
-          setProductData(data.data);  // Set the product data on success
-          console.log("setProductData", productData)
-        } else {
-          console.error("Error fetching product data:", data.message);
-        }
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, [ProductId]);
+// useEffect remains the same to fetch data on initial load or ProductId change
+useEffect(() => {
+  if (!ProductId) return;
+  fetchProductData();
+}, [ProductId]);
   const [isModalOpen1, setIsModalOpen1] = useState(false);
 
   const openModal1 = (image) => {
@@ -542,59 +634,9 @@ const AddProductPhoto = () => {
     console.log("Image clicked:", img); // Log the clicked image
     setSelectedImage(img); // Set the clicked image
   };
-  const handleSubmit1 = async () => {
-    // Initialize FormData
-    const data = new FormData();
-
-    // Append the entire object as a JSON string to FormData under the "Data" key
-    data.append("Data", JSON.stringify(formData));
-    // Handle image uploads (assuming stepTwoData contains images)
-
-    // Debugging: Log FormData content
-    for (let pair of data.entries()) {
-      console.log(`${pair[0]}:`, pair[1]);
-    }
-
-    // Axios POST request
-    try {
-      const response = await axios.post(
-        createproductWithImages, // Adjust the URL
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Axios handles boundaries
-          },
-        }
-      );
-
-      // Show success toast after successful submission
-      toast.success(response.data.message || "Product created successfully!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-
-      console.log("Response:", response.data);
-    } catch (error) {
-      console.error("Error uploading data:", error.response?.data || error.message);
-      // Show error toast if the submission fails
-      toast.error(error.response?.data?.message || "Error uploading data", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-    }
-  };
   return (
     <div>
+      {isLoading && <LoadingAnimation />}
       <div className="flex justify-between items-start min-h-scree pt-4">
         {/* Left Side */}
         <ToastContainer />
@@ -1179,7 +1221,8 @@ const AddProductPhoto = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Sizes:</label>
                 <div className="flex flex-wrap gap-3">
                   {data.map((size) => (
-                    <div key={size.SizeID} className="flex flex-col items-center">
+                    <div key={size.SizeID} className="relative flex flex-col items-center group">
+                      {/* Size Button */}
                       <button
                         type="button"
                         className={`px-4 py-2 border border-gray-300 rounded-md text-sm bg-gray-100 hover:bg-blue-500 hover:text-white transition-all transform duration-300 ease-in-out ${formData.colorData &&
@@ -1196,7 +1239,7 @@ const AddProductPhoto = () => {
                         {size.Label}
                       </button>
 
-                      {/* Quantity input below the size button */}
+                      {/* Quantity Input */}
                       {formData.selectedColorID &&
                         formData.colorData &&
                         formData.colorData.Colors
@@ -1221,10 +1264,24 @@ const AddProductPhoto = () => {
                             placeholder="Qty"
                           />
                         )}
+
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-white p-2 rounded-lg shadow-lg border text-sm hidden group-focus-within:block">
+                        <button
+                          className="text-red-600 hover:text-red-700"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent parent click
+                            handleDeleteSize(size.SizeID);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+
                     </div>
                   ))}
                 </div>
               </div>
+
 
               {/* Colors Section */}
               <div>
@@ -1239,12 +1296,13 @@ const AddProductPhoto = () => {
                   onClick={() => setIsColorPickerVisible((prev) => !prev)}
                   title="Add Colors"
                 >
-                  <span className="text-lg text-blue-600 font-bold">
+                  <span
+                    className="text-lg text-blue-600 font-bold leading-none"
+                    style={{ lineHeight: '1' }}
+                  >
                     {isColorPickerVisible ? '-' : '+'}
-                  </span> {/* Toggle between "+" and "-" */}
+                  </span>
                 </button>
-
-
                 {/* Color Picker Visibility */}
                 {isColorPickerVisible && (
                   <div className="flex flex-wrap gap-3 overflow-y-auto max-h-48 scrollbar-thin scrollbar-thumb-blue-500 pl-8 pt-1 pb-8 scrollbar-track-gray-200">
@@ -1275,20 +1333,36 @@ const AddProductPhoto = () => {
                       return (
                         <div
                           key={colorID}
-                          className={`w-10 h-10 flex items-center justify-center rounded-lg cursor-pointer transition-all transform duration-300 ease-in-out border-2 shadow-lg ${selectedColorID === colorID ? 'border-blue-600  shadow-blue-200 scale-110' : 'bg-gray-100 hover:scale-110  hover:bg-gray-200'
+                          className={`group relative w-10 h-10 flex items-center justify-center rounded-lg cursor-pointer transition-all transform duration-300 ease-in-out border-2 shadow-lg ${selectedColorID === colorID ? 'border-blue-600 shadow-blue-200 scale-110' : 'bg-gray-100 hover:scale-110 hover:bg-gray-200'
                             }`}
                           onClick={() => handleColorSelect(colorID)}
                         >
+                          {/* Color Circle */}
                           <div
                             className="w-5 h-5 rounded-full"
                             style={{ backgroundColor: color?.HexCode }}
                             title={color?.ColorName}
                           ></div>
+
+                          {/* Delete Tooltip */}
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 bg-white p-2 rounded-lg shadow-lg border text-sm hidden group-hover:block">
+                            <button
+                              className="text-red-600 hover:text-red-700"
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent parent click
+                                handleDeleteColor(colorID);
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       );
                     })}
                   </div>
                 </div>
+
+
 
               </div>
 
@@ -1396,7 +1470,9 @@ const AddProductPhoto = () => {
             {editMode ? 'Update Product' : 'Create Product'}
           </button>
 
-          <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
+          <button
+            onClick={handleCancel}
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600">
             Cancel
           </button>
         </div>

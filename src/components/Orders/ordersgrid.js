@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { getOrderById } from '../../Constants/apiRoutes';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
+import { Combobox } from '@headlessui/react';
+import { HiChevronDown } from 'react-icons/hi'; // React Icon for dropdown
 const OrderDetailsScreen = () => {
     // Dummy dynamic data
     const [orderData, setOrderData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { orderId } = useParams();
+    const [query, setQuery] = useState('');
     useEffect(() => {
         const fetchOrderData = async () => {
             try {
@@ -52,7 +55,14 @@ const OrderDetailsScreen = () => {
             state: "Texas",
         },
     };
-
+    const statuses = ['Pending', 'Shipped', 'Delivered', 'Cancelled'];
+    const [selectedStatus, setSelectedStatus] = useState(orderData?.status || 'N/A');
+    const filteredStatuses =
+        query === ''
+            ? statuses
+            : statuses.filter((status) =>
+                status.toLowerCase().includes(query.toLowerCase())
+            );
     return (
         <div className="min-h-screen bg-gray-50 p-4">
             <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
@@ -66,15 +76,34 @@ const OrderDetailsScreen = () => {
                         </p>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
-                        <select
-                            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none w-full sm:w-auto"
-                            defaultValue={orderData?.status || 'N/A'}
-                        >
-                            <option value="Pending">Pending</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
+                        <Combobox value={selectedStatus} onChange={setSelectedStatus}>
+                            <div className="relative w-40 sm:w-32"> {/* Reduced width */}
+                                <div className="relative">
+                                    <Combobox.Input
+                                        className="border border-gray-300 rounded-md px-1 py-2 text-sm focus:outline-none w-full pr-10"
+                                        onChange={(event) => setQuery(event.target.value)}
+                                        displayValue={(status) => status}
+                                    />
+                                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <HiChevronDown className="w-5 h-5 text-gray-400" aria-hidden="true" />
+                                    </Combobox.Button>
+                                </div>
+                                <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white shadow-lg z-10">
+                                    {filteredStatuses.map((status) => (
+                                        <Combobox.Option
+                                            key={status}
+                                            value={status}
+                                            className={({ active }) =>
+                                                `cursor-pointer select-none px-4 py-2 ${active ? 'bg-blue-500 text-white' : 'text-gray-900'}`
+                                            }
+                                        >
+                                            {status}
+                                        </Combobox.Option>
+                                    ))}
+                                </Combobox.Options>
+                            </div>
+                        </Combobox>
+
                         <button className="bg-blue-600 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-blue-700 w-full sm:w-auto">
                             Save
                         </button>

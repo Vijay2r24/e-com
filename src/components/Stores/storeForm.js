@@ -285,7 +285,7 @@ const UserForm = () => {
         <Combobox as="div" value={formData1.CountryID} onChange={(value) => handleSelectionChange('CountryID', value)}>
           <div className="relative">
             <Combobox.Input
-              className={`w-full rounded-md border bg-white py-2 pl-3 pr-10 text-gray-900 shadow-sm sm:text-sm ${
+              className={`w-full rounded-md border bg-white py-2.5 pl-3 pr-10 text-gray-900 shadow-sm sm:text-sm ${
                 errors.CountryError && !formData1.CountryID ? 'border-red-500' : 'border-gray-400'
               }`}
               onChange={(event) => setQuery(event.target.value)} // Handle the search query
@@ -332,7 +332,7 @@ const UserForm = () => {
         <Combobox as="div" value={formData1.StateID} onChange={(value) => handleSelectionChange('StateID', value)}>
           <div className="relative">
             <Combobox.Input
-              className={`w-full rounded-md border bg-white py-2 pl-3 pr-10 text-gray-900 shadow-sm sm:text-sm ${
+              className={`w-full rounded-md border bg-white py-2.5 pl-3 pr-10 text-gray-900 shadow-sm sm:text-sm ${
                 errors.StateError && !formData1.StateID ? 'border-red-500' : 'border-gray-400'
               }`}
               onChange={(event) => setQuery(event.target.value)}
@@ -375,7 +375,7 @@ const UserForm = () => {
         <Combobox as="div" value={formData1.CityID} onChange={(value) => handleSelectionChange('CityID', value)}>
           <div className="relative">
             <Combobox.Input
-              className={`w-full rounded-md border bg-white py-2 pl-3 pr-10 text-gray-900 shadow-sm sm:text-sm ${
+              className={`w-full rounded-md border bg-white py-2.5 pl-3 pr-10 text-gray-900 shadow-sm sm:text-sm ${
                 errors.CityError && !formData1.CityID ? 'border-red-500' : 'border-gray-400'
               }`}
               onChange={(event) => setQuery(event.target.value)}

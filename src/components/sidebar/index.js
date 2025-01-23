@@ -55,7 +55,7 @@ const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
       >
         {/* Logo and Close Icon for small screens */}
         <div className="flex justify-between items-center p-2.5 border-b-2">
-        <img src={Logo} alt="Logo" className="w-14 h-8 object-contain" />
+        <img src={Logo} alt="Logo" className="w-14 h-11 object-contain" />
           <button
             onClick={toggleSidebar}
             className="lg:hidden text-gray-500 hover:text-gray-800"
@@ -64,7 +64,7 @@ const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
           </button>
         </div>
 
-        {user && (
+        {/* {user && (
           <div className="flex justify-center items-center gap-2 my-4">
             <img
               src={user.avatar}
@@ -76,9 +76,9 @@ const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
               <p className="text-sm text-gray-500">{user.email}</p>
             </div>
           </div>
-        )}
+        )} */}
 
-        <ul className="space-y-6 mx-4 p-2">
+        <ul className="space-y-6 mx-4 mt-2 p-2">
           {sidebarItems.map((item, index) => (
             <li key={index}>
               <Link

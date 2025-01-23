@@ -1,5 +1,6 @@
-import React from "react";
-import { useRoutes } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useRoutes, useLocation } from "react-router-dom";
+import LoadingAnimation from "./components/Loader/loader";
 import MainLayout from "./main_layout";
 import Dashboard from "./pages/admin/dashboard";
 import Orders from "./components/Orders/order";
@@ -34,7 +35,7 @@ import UserList from "./components/Users/userList";
 import UserAdd from "./components/Users/userAdd";
 import ForgotPassword from "./components/Login/forgotPassword";
 import SingleProduct from "./components/singleProduct/product";
-import Profile from "./components/Profile/profile";
+import Profile from "./components/Profile/Profile (1)";
 import StoreList from "./components/Stores/storeList";
 import StoreAdd from "./components/Stores/storeForm";
 import BannerImage from "./components/BannerImages/bannerImage";
@@ -47,19 +48,32 @@ import  ExpoSnackEmbed from "./ExpoSnackEmbed";
 import SilentNotification from "./components/PushNotification/silentnotification";
 import Notifications from "./components/PushNotification/Home";
 
-
 const AppRoutes = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
+
+  // Show loader when the location changes
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false); // Simulate route loading completion
+    }, 700); // Adjust the timeout as needed
+
+    return () => clearTimeout(timer);
+  }, [location]);
+
   const snackData = {
-    snackId: '@sravani-ch/textinput-example',
-    platform: 'web',
+    snackId: "@sravani-ch/textinput-example",
+    platform: "web",
     preview: true,
-    theme: 'light',
+    theme: "light",
     style: {
-      height: '600px', // Custom height for the embed
-      width: '100%',
+      height: "600px", // Custom height for the embed
+      width: "100%",
     },
   };
-  return useRoutes([
+
+  const routes = useRoutes([
     {
       path: "/",
       element: <Login />,
@@ -69,8 +83,8 @@ const AppRoutes = () => {
       element: <SignupPage />,
     },
     {
-      path:"/ForgotPassword",
-      element:<ForgotPassword/>,
+      path: "/ForgotPassword",
+      element: <ForgotPassword />,
     },
     {
       element: <MainLayout />,
@@ -80,48 +94,44 @@ const AppRoutes = () => {
           element: <Dashboard />,
         },
         {
-          path:"/Profile",
-          element:<Profile/>,
+          path: "/Profile",
+          element: <Profile />,
         },
         {
-          path:"/silentNotification",
-          element:<SilentNotification />,
-        },
-        // {
-        //   path:"/PushNotification",
-        //   element:<PushNotification />,
-        // },
-        {
-          path:"/ProductPosting",
-          element:<ProductPosting/>,
+          path: "/silentNotification",
+          element: <SilentNotification />,
         },
         {
-          path:"/Productpost",
-          element:<SingleProduct />
+          path: "/ProductPosting",
+          element: <ProductPosting />,
         },
         {
-          path:"/storeList",
-          element:<StoreList/>
+          path: "/Productpost",
+          element: <SingleProduct />,
         },
         {
-          path:"/storeAdd",
-          element:<StoreAdd />
+          path: "/storeList",
+          element: <StoreList />,
         },
         {
-          path:"/StoreEdit/:storeId",
-          element:<StoreAdd />
+          path: "/storeAdd",
+          element: <StoreAdd />,
         },
         {
-          path:"/UserForm",
-          element:<UserForm />
+          path: "/StoreEdit/:storeId",
+          element: <StoreAdd />,
         },
         {
-          path:"/ViewOrder/:orderId",
-          element:<Ordergrid />
+          path: "/UserForm",
+          element: <UserForm />,
         },
         {
-          path:"/BannerImage",
-          element:<BannerImage />
+          path: "/ViewOrder/:orderId",
+          element: <Ordergrid />,
+        },
+        {
+          path: "/BannerImage",
+          element: <BannerImage />,
         },
         {
           path: "/categories/:categoryID",
@@ -133,20 +143,19 @@ const AppRoutes = () => {
         },
         {
           path: "/UserAdd/:userId",
-          element: <UserAdd/>,
+          element: <UserAdd />,
         },
         {
           path: "/UserAdd",
-          element: <UserAdd/>,
+          element: <UserAdd />,
         },
         {
-          path:"/bannerform",
-          element:<BannerForm/>
+          path: "/bannerform",
+          element: <BannerForm />,
         },
-      
         {
-          path:"/dynamicui",
-          element:<ExpoSnackEmbed snackData={snackData} />
+          path: "/dynamicui",
+          element: <ExpoSnackEmbed snackData={snackData} />,
         },
         {
           path: "/Notifications",
@@ -160,7 +169,6 @@ const AppRoutes = () => {
               path: "silentNotification",
               element: <SilentNotification />,
             },
-            
           ],
         },
         {
@@ -259,10 +267,9 @@ const AppRoutes = () => {
             },
           ],
         },
-
         {
           path: "/Browse/product",
-          element: <ProductCreation />
+          element: <ProductCreation />,
         },
         {
           path: "/brands/:BrandID",
@@ -276,7 +283,6 @@ const AppRoutes = () => {
           path: "/brandsList",
           element: <BrandList />,
         },
-
         {
           path: "/categories",
           element: <Categories />,
@@ -324,6 +330,13 @@ const AppRoutes = () => {
       element: <NotFound />,
     },
   ]);
+
+  return (
+    <>
+      {isLoading && <LoadingAnimation />}
+      {routes}
+    </>
+  );
 };
 
 export default AppRoutes;

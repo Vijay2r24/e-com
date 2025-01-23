@@ -40,12 +40,12 @@ const Home = () => {
         <button
           key={tab.id}
           onClick={() => handleTabChange(tab.id)}
-          className={`flex items-center gap-3 px-5 py-2 rounded-lg shadow-sm border transition-all duration-300 w-full sm:w-auto ${
+          className={`flex items-center gap-3 px-5 py-2 rounded-lg shadow-lg border transition-all duration-300 w-full sm:w-auto ${
             activeTab === tab.id
-              ? `bg-blue-500 text-white border-blue-500 hover:bg-blue-600`
-              : `bg-white text-gray-600 border-gray-300 hover:bg-gray-100`
+              ? `bg-gradient-to-r from-green-300 via-emerald-400 to-teal-500 text-white border-transparent hover:shadow-xl`
+              : `bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:shadow-md`
           }`}
-        >
+>          
           <tab.Icon className="text-lg" />
           <span className="font-medium text-sm sm:text-base">{tab.label}</span>
         </button>

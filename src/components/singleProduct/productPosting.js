@@ -10,7 +10,7 @@ import { BrandsContext } from '../Context/BrandsContext'
 import { DataContext } from '../Context/SizeContext'
 import { ColorContext } from '../Context/ColorContext'
 import Blueshirt from '../../assets/images/blushirt.jpg'
-
+import LoadingAnimation from '../Loader/loader';
 const AddProductPhoto = () => {
   const [selectedSize, setSelectedSize] = useState("M");
   const [selectedColor, setSelectedColor] = useState("black");
@@ -38,6 +38,7 @@ const AddProductPhoto = () => {
 
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [modalImage, setModalImage] = useState(null);
   const [errors, setErrors] = useState({});
   const handleUpload = (event) => {
@@ -101,6 +102,7 @@ const AddProductPhoto = () => {
   };
   return (
     <div>
+     {isLoading && <LoadingAnimation />}
       <div className="flex justify-between items-start min-h-scree pt-4">
         {/* Left Side */}
 

@@ -8,6 +8,7 @@ import { ColorProvider } from '../src/components/Context/ColorContext';
 import {ProductTypesProvider}from '../src/components/Context/AllProductTypesContext';
 import TawkToWidget from'../src/components/tawk/TawkToWidget';
 import LocationDataProvider  from "../src/components/Context/DataContext";
+import Loader  from "../src/components/Loader/loader";
 
 function App() {
   return (
@@ -26,7 +27,6 @@ function App() {
         </CategoriesProvider>
       </BrandsProvider>
       <TawkToWidget />
-
     </BrowserRouter>
   );
 }

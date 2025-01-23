@@ -202,7 +202,7 @@ const ProductTable = () => {
                     </StyledTableCell>
                     <StyledTableCell>{product.productName}</StyledTableCell>
                     <StyledTableCell>{`${parseFloat(product.MRP).toFixed(2)}`}</StyledTableCell>
-                    <StyledTableCell>{brandName}</StyledTableCell>
+                    <StyledTableCell>{product.brandName}</StyledTableCell>
                     <StyledTableCell>
                       <div className="flex justify-start space-x-2">
                         <button

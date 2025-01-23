@@ -4,6 +4,7 @@ import { FaEye, FaTrash } from "react-icons/fa";
 import SearchBar from "../search_bar";
 import { useNavigate } from 'react-router-dom';
 import { getAllOrders } from '../../Constants/apiRoutes'
+import StatusBadge from "./Stusbudge";
 import {
   StyledTableCell,
   StyledTableRow,
@@ -33,13 +34,13 @@ const OrderTable = () => {
   useEffect(() => {
     const filteredOrders = Array.isArray(order)
       ? order.filter((order) =>
-          (order.orderId && order.orderId.toString().includes(searchQuery.toLowerCase())) || 
-          (order.customer && `${order.customer.firstName} ${order.customer.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()))
-        )
+        (order.orderId && order.orderId.toString().includes(searchQuery.toLowerCase())) ||
+        (order.customer && `${order.customer.firstName} ${order.customer.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()))
+      )
       : [];
     setFilteredOrders(filteredOrders);
   }, [searchQuery, order]);
-  
+
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage + 1); // Convert zero-based index to one-based
   };
@@ -103,12 +104,13 @@ const OrderTable = () => {
                   </div>
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  <span>
-                    {order.orderHistory?.length > 0
+                  <StatusBadge
+                   status={order.orderHistory?.length > 0
                       ? order.orderHistory
-                          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0].status
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0].status
                       : "Pending"}
-                  </span>
+                  />
+
                 </StyledTableCell>
                 <StyledTableCell align="center">
                   <div className="flex justify-center space-x-2">
