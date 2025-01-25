@@ -1,9 +1,10 @@
+
 import React from "react";
 
 const StatusBadge = ({ status }) => {
   // Hardcoded colors for each status
   const statusColors = {
-    PENDING: "#FFCC80", // Yellow-orange
+    Pending: "#FFCC80", // Yellow-orange
     Shopped: "#6C5B7B", // Purple
     Delivered: "#28A745", // Green
     Cancelled: "#DC3545", // Red

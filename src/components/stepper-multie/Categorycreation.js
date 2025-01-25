@@ -6,7 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import axios from 'axios';
-
+import {Categorycreation,getCategoryById,UpdateCategory} from "../../Constants/apiRoutes"
 const Step2 = (errors) => {
     const [query, setQuery] = useState("");
     const [formData, setFormData] = useState({
@@ -94,7 +94,7 @@ const Step2 = (errors) => {
         if (!categoryID) return;
 
         axios
-            .get(`https://electronic-ecommerce.onrender.com/api/getCategoryById/${categoryID}`)
+            .get(`${getCategoryById}/${categoryID}`)
             .then((response) => {
                 // Function to clean all string fields in the response data
                 const cleanString = (str) => {
@@ -177,7 +177,7 @@ const Step2 = (errors) => {
         }
 
         try {
-            const response = await fetch('https://electronic-ecommerce.onrender.com/api/categoryWithImages', {
+            const response = await fetch(Categorycreation, {
                 method: 'POST',
                 body: data,
             });
@@ -242,7 +242,7 @@ const Step2 = (errors) => {
         }
     };
     const updateCategory = async () => {
-        const apiUrl = `https://electronic-ecommerce.onrender.com/api/updateCategory/${categoryID}`;
+        const apiUrl = `${UpdateCategory}/${categoryID}`;
 
         // Create a new FormData object
         const data = new FormData();

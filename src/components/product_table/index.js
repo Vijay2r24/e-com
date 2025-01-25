@@ -25,6 +25,7 @@ import {
   TablePaginationActions,
 } from "../CustomTablePagination";
 import { routeNames } from "../../constants";
+import {deleteProductWithImages,getProductDetails} from "../../Constants/apiRoutes"
 
 const ProductTable = () => {
   const [products, setProducts] = useState([]);
@@ -34,7 +35,7 @@ const ProductTable = () => {
   const navigate = useNavigate();
 
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);  // Default to 10 items per page
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleOrderUpdate = (ProductId) => {
@@ -60,6 +61,10 @@ const ProductTable = () => {
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage);
   };
+  const handleRowsPerPageChange = (event) => {
+    setItemsPerPage(parseInt(event.target.value, 10));  // Update items per page
+    setCurrentPage(0);  // Reset to first page when items per page is changed
+  };
 
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState(""); // "edit" or "delete"
@@ -81,29 +86,31 @@ const ProductTable = () => {
     console.log(`Deleting product: ${selectedProduct.name}`);
     closeModal();
   };
+  const [totalRecords, setTotalRecords] = useState(0); // Total records from API response
 
   useEffect(() => {
-    const apiUrl = "https://electronic-ecommerce.onrender.com/api/getProductDetails";
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
+    const fetchProducts = async () => {
+      const apiUrl = `${getProductDetails}?pageNumber=${currentPage + 1}&pageSize=${itemsPerPage}`;
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
         if (data.statusCode === "SUCCESS") {
-          setProducts(data.data);
+          setProducts(data.data);  // Assuming the data returned is the products array
+          setTotalRecords(data.totalRecords);  // Set total number of records
         } else {
-          console.error("Failed to fetch products:", data.message);
+          console.error('Failed to fetch products:', data.message);
         }
-      })
-      .catch((err) => console.error("Error:", err));
-  }, [refresh]);
+      } catch (err) {
+        console.error('Error:', err);
+      }
+    };
+
+    fetchProducts();
+  }, [currentPage, itemsPerPage]);  //
 
   const deleteProduct = async (ProductID) => {
     try {
-      const response = await fetch(`https://electronic-ecommerce.onrender.com/api/deleteProductWithImages/${ProductID}`, {
+      const response = await fetch(`${deleteProductWithImages}/${ProductID}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -145,10 +152,13 @@ const ProductTable = () => {
     }
   };
 
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+   // Calculate the indexes for slicing
+   const indexOfLastItem = (currentPage + 1) * itemsPerPage; // Get the index of last item for current page
+   const indexOfFirstItem = indexOfLastItem - itemsPerPage; // Get the index of first item for current page
+   const currentProducts = filteredProducts.slice(indexOfFirstItem, indexOfLastItem); // Slice the products for current page
+ // Calculate total pages based on filteredProducts
+ const totalPages = Math.ceil(filteredProducts.length / itemsPerPage); 
+
 
   return (
     <div className="overflow-x-auto">
@@ -183,7 +193,7 @@ const ProductTable = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {currentProducts.map((product) => {
+              {filteredProducts.map((product) => {
                 const firstImage = product.variants?.[0]?.images?.[0] || "";
                 const brandName = product.brand?.brandName || "N/A";
                 return (
@@ -232,7 +242,7 @@ const ProductTable = () => {
         </TableContainer>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {currentProducts.map((product) => (
+          {filteredProducts.map((product) => (
             <div
               key={product.productId}
               className="bg-white rounded-lg border border-gray-200 overflow-hidden"
@@ -290,12 +300,13 @@ const ProductTable = () => {
           ))}
         </div>
       )}
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 20]}
-        count={filteredProducts.length}
-        rowsPerPage={itemsPerPage}
-        page={currentPage}
-        onPageChange={handlePageChange}
+   <TablePagination
+        rowsPerPageOptions={[5, 10, 20]}  // Options for items per page
+        count={totalRecords}           // Total number of items (should be available in the response data)
+        rowsPerPage={itemsPerPage}        // Current rows per page
+        page={currentPage}                // Current page (starts from 0)
+        onPageChange={handlePageChange}   // Handle page change
+        onRowsPerPageChange={handleRowsPerPageChange}  // Handle items per page change
         component="div"
       />
     </div>
@@ -303,6 +314,5 @@ const ProductTable = () => {
 };
 
 export default ProductTable;
-
 
 

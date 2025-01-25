@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { getOrderById } from '../../Constants/apiRoutes';
+import { getOrderById, updateOrderItemStatus } from '../../Constants/apiRoutes';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
 import { Combobox } from '@headlessui/react';
 import { HiChevronDown } from 'react-icons/hi'; // React Icon for dropdown
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const OrderDetailsScreen = () => {
     // Dummy dynamic data
     const [orderData, setOrderData] = useState(null);
@@ -55,6 +58,64 @@ const OrderDetailsScreen = () => {
             state: "Texas",
         },
     };
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
+    const [statusId, setStatusId] = useState("");
+    const [remarks, setRemarks] = useState("");
+
+    // Sample status options with ID and name
+    const statusOptions = [
+        { id: 1, name: "Pending" },
+        { id: 2, name: "Processing" },
+        { id: 3, name: "Shipped" },
+        { id: 4, name: "Delivered" },
+        { id: 5, name: "Canceled" },
+    ];
+
+    const openDialog = (item) => {
+        setCurrentItem(item);
+        const currentStatus = statusOptions.find(
+            (option) => option.name === item?.orderItems?.orderHistory?.status
+        );
+        setStatusId(currentStatus?.id || 1); // Default to "Pending" ID
+        setRemarks("");
+        setIsDialogOpen(true);
+    };
+
+    const closeDialog = () => {
+        setIsDialogOpen(false);
+        setCurrentItem(null);
+        setStatusId("");
+        setRemarks("");
+    };
+
+    const handleUpdate = async () => {
+        const payload = {
+            OrderItemID: currentItem?.orderItemId,
+            StatusID: statusId,
+            remarks,
+        };
+
+        try {
+            const response = await fetch(`${updateOrderItemStatus}/${orderId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                toast.success("Order item status updated successfully!");
+                closeDialog();
+            } else {
+                const errorData = await response.json();
+                toast.error(errorData.message || "Failed to update order item status.");
+            }
+        } catch (error) {
+            toast.error("An error occurred while updating the status.");
+        }
+    };
     const statuses = ['Pending', 'Shipped', 'Delivered', 'Cancelled'];
     const [selectedStatus, setSelectedStatus] = useState(orderData?.status || 'N/A');
     const filteredStatuses =
@@ -65,6 +126,7 @@ const OrderDetailsScreen = () => {
             );
     return (
         <div className="min-h-screen bg-gray-50 p-4">
+            <ToastContainer />
             <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
                     <div>
@@ -72,8 +134,18 @@ const OrderDetailsScreen = () => {
                             Order ID: {orderData?.orderId || 'N/A'}
                         </h1>
                         <p className="text-sm text-gray-500">
-                            Order Created: {orderData?.orderDate || 'N/A'}
+                            Order Created: {orderData?.orderDate
+                                ? new Intl.DateTimeFormat('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: 'numeric',
+                                    minute: 'numeric',
+                                    second: 'numeric',
+                                }).format(new Date(orderData.orderDate))
+                                : 'N/A'}
                         </p>
+
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
                         <Combobox value={selectedStatus} onChange={setSelectedStatus}>
@@ -121,21 +193,21 @@ const OrderDetailsScreen = () => {
                             <p className="w-1/2 text-sm text-gray-600 font-medium truncate">Name</p>
                             <p className="w-6 text-center text-sm text-gray-600">:</p>
                             <p className="w-1/2 text-sm text-gray-800 truncate">
-                                {orderData?.customer?.firstName || 'N/A'}
+                                {orderData?.customerDetails?.name || 'N/A'}
                             </p>
                         </div>
                         <div className="flex items-center flex-nowrap">
                             <p className="w-1/2 text-sm text-gray-600 font-medium truncate">Email</p>
                             <p className="w-6 text-center text-sm text-gray-600">:</p>
                             <p className="w-1/2 text-sm text-gray-800 truncate">
-                                {orderData?.customer?.email || 'N/A'}
+                                {orderData?.customerDetails?.email || 'N/A'}
                             </p>
                         </div>
                         <div className="flex items-center flex-nowrap">
                             <p className="w-1/2 text-sm text-gray-600 font-medium truncate">Phone</p>
                             <p className="w-6 text-center text-sm text-gray-600">:</p>
                             <p className="w-1/2 text-sm text-gray-800 truncate">
-                                {orderData1?.customer?.phone || 'N/A'}
+                                {orderData?.customerDetails?.phoneNumber || 'N/A'}
                             </p>
                         </div>
                     </div>
@@ -152,7 +224,12 @@ const OrderDetailsScreen = () => {
                             </p>
                             <p className="w-6 text-center text-sm text-gray-600">:</p>
                             <p className="w-1/2 text-sm text-gray-800 truncate">
-                                {orderData?.orderDate || "NA"}
+                                {orderData?.orderDate
+                                    ? new Intl.DateTimeFormat('en-US', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                    }).format(new Date(orderData.orderDate))
+                                    : 'N/A'}
                             </p>
                         </div>
                         <div className="flex items-center flex-nowrap">
@@ -193,16 +270,7 @@ const OrderDetailsScreen = () => {
                             </p>
                             <p className="w-6 text-center text-sm text-gray-600">:</p>
                             <p className="w-1/2 text-sm text-gray-800 truncate">
-                                {orderData?.customer?.address?.addressLine2 || "Na"}
-                            </p>
-                        </div>
-                        <div className="flex items-center flex-nowrap">
-                            <p className="w-1/2 text-sm text-gray-600 font-medium truncate">
-                                Street
-                            </p>
-                            <p className="w-6 text-center text-sm text-gray-600">:</p>
-                            <p className="w-1/2 text-sm text-gray-800 truncate">
-                                {orderData?.customer?.address?.addressLine1 || "Na"}
+                                {orderData?.address?.addressLine1 || "Na"}
                             </p>
                         </div>
                         <div className="flex items-center flex-nowrap">
@@ -211,7 +279,16 @@ const OrderDetailsScreen = () => {
                             </p>
                             <p className="w-6 text-center text-sm text-gray-600">:</p>
                             <p className="w-1/2 text-sm text-gray-800 truncate">
-                                {orderData?.customer?.address?.stateName || "Na"}
+                                {orderData?.address?.state || "Na"}
+                            </p>
+                        </div>
+                        <div className="flex items-center flex-nowrap">
+                            <p className="w-1/2 text-sm text-gray-600 font-medium truncate">
+                                country
+                            </p>
+                            <p className="w-6 text-center text-sm text-gray-600">:</p>
+                            <p className="w-1/2 text-sm text-gray-800 truncate">
+                                {orderData?.address?.country || "Na"}
                             </p>
                         </div>
                     </div>
@@ -230,6 +307,8 @@ const OrderDetailsScreen = () => {
                                     <th className="px-4 py-2 text-left text-sm text-gray-600">Unit Price</th>
                                     <th className="px-4 py-2 text-left text-sm text-gray-600">Quantity</th>
                                     <th className="px-4 py-2 text-left text-sm text-gray-600">Total</th>
+                                    <th className="px-4 py-2 text-left text-sm text-gray-600">Status</th>
+                                    <th className="px-4 py-2 text-left text-sm text-gray-600">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -240,9 +319,11 @@ const OrderDetailsScreen = () => {
                                                 <img
                                                     src={item.product?.images[0] || 'https://via.placeholder.com/50'}
                                                     alt={item.product?.productName}
-                                                    className="w-12 h-12 object-cover mr-2 rounded sm:w-16 sm:h-16 md:w-20 md:h-20"
+                                                    className="w-12 h-12 object-cover mr-2 rounded"
                                                 />
-                                                <span className="hidden sm:block">{item.product?.productName || 'N/A'}</span>
+                                                <span className="block truncate" title={item.product?.productName || 'N/A'}>
+                                                    {item.product?.productName || 'N/A'}
+                                                </span>
                                             </td>
                                             <td className="px-4 py-2 text-sm text-gray-800">
                                                 ₹{parseFloat(item.price || 0).toFixed(2)}
@@ -253,18 +334,76 @@ const OrderDetailsScreen = () => {
                                             <td className="px-4 py-2 text-sm text-gray-800">
                                                 ₹{(item.quantity * parseFloat(item.price || 0)).toFixed(2)}
                                             </td>
+                                            <td className="px-4 py-2 text-sm text-gray-800">
+                                                {item.product?.orderHistory?.status || 'N/A'}
+                                            </td>
+                                            <td className="px-4 py-2 text-sm text-gray-800">
+                                                <button
+                                                    className="text-blue-600 hover:underline"
+                                                    onClick={() => openDialog(item)}
+                                                >
+                                                    Edit
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td className="px-4 py-2 text-sm text-gray-800" colSpan="4">
-                                            No items found.
+                                        <td colSpan="6" className="px-4 py-2 text-center text-gray-500">
+                                            No order items found.
                                         </td>
                                     </tr>
                                 )}
+
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Dialog Box */}
+                    {isDialogOpen && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+                                <h3 className="text-lg font-semibold mb-4">Edit Item</h3>
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                    <select
+                                        value={statusId}
+                                        onChange={(e) => setStatusId(Number(e.target.value))}
+                                        className="w-full border rounded p-2"
+                                    >
+                                        {statusOptions.map((option) => (
+                                            <option key={option.id} value={option.id}>
+                                                {option.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
+                                    <input
+                                        type="text"
+                                        value={remarks}
+                                        onChange={(e) => setRemarks(e.target.value)}
+                                        className="w-full border rounded p-2"
+                                    />
+                                </div>
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={closeDialog}
+                                        className="text-sm text-gray-700 px-4 py-2 mr-2 hover:bg-gray-100 rounded"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleUpdate}
+                                        className="text-sm text-white bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
+                                    >
+                                        Update
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
 

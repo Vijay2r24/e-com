@@ -8,6 +8,14 @@ import { ImageAspectRatioOutlined } from "@mui/icons-material";
 import pushNotification from "../../assets/image (4).png";
 import { Combobox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Paper } from "@mui/material";
+import { AiOutlineEdit } from "react-icons/ai";
+import { MdOutlineCancel } from "react-icons/md";
+import {
+    StyledTableCell,
+    StyledTableRow,
+    TablePaginationActions,
+} from "../CustomTablePagination";
 import { Silent_Notification, getAllDynamicUI } from "../../Constants/apiRoutes"
 const AddProject = () => {
     const [formData1, setFormData1] = useState({
@@ -59,6 +67,10 @@ const AddProject = () => {
 
             if (response.ok) {
                 toast.success('Notification sent successfully!');
+                setFormData1({
+                    projectName: '', description: '', imageFile: "",
+                    imagePreview: null,
+                });
             } else {
                 toast.error('Error sending notification');
             }
@@ -67,7 +79,35 @@ const AddProject = () => {
             toast.error('An error occurred while sending notification');
         }
     };
-
+    const handleEdit = () => {
+    }
+    // Dummy data for table
+    const dummyData = [
+        {
+            componentId: 1,
+            componentName: "Component A",
+            description: "This is a description for component A.",
+            status: "Active"
+        },
+        {
+            componentId: 2,
+            componentName: "Component B",
+            description: "This is a description for component B.",
+            status: "Inactive"
+        },
+        {
+            componentId: 3,
+            componentName: "Component C",
+            description: "This is a description for component C.",
+            status: "Active"
+        },
+        {
+            componentId: 4,
+            componentName: "Component D",
+            description: "This is a description for component D.",
+            status: "Inactive"
+        }
+    ];
     const validateForm = () => {
         const formErrors = {};
         if (!formData1.projectName.trim()) {
@@ -150,6 +190,7 @@ const AddProject = () => {
                 option.ComponentName.toLowerCase().includes(query.toLowerCase())
             );
     return (
+        <div>
         <div className="flex flex-col space-y-4 p-4 max-w-6xl mx-auto bg-white rounded-lg  items-start">
             <ToastContainer />
             {/* {loading && <LoadingAnimation />} */}
@@ -244,18 +285,66 @@ const AddProject = () => {
                         style={{ height: '130px' }}
                     />
                 </div>
-                <button
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className={`bg-green-500 text-white px-4 mt-4 ml-4 py-2 rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-300 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-                >
-                    Send
-                </button>
+                <div className="flex justify-end">
+                    <button
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        className={`bg-green-500 text-white px-4 mt-4 py-2 rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-300 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    >
+                        Send
+                    </button>
+                </div>
+
+
 
 
             </div>
-        </div>
+            </div>
 
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 700 }} aria-label="component table">
+                    <TableHead>
+                        <TableRow>
+                            <StyledTableCell>Component ID</StyledTableCell>
+                            <StyledTableCell>Component Name</StyledTableCell>
+                            <StyledTableCell>Description</StyledTableCell>
+                            <StyledTableCell>Status</StyledTableCell>
+                            <StyledTableCell>Actions</StyledTableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {dummyData.map((row) => (
+                            <StyledTableRow key={row.componentId}>
+                                <StyledTableCell>{row.componentId}</StyledTableCell>
+                                <StyledTableCell>{row.componentName}</StyledTableCell>
+                                <StyledTableCell>{row.description}</StyledTableCell>
+                                <StyledTableCell>{row.status}</StyledTableCell>
+                                <StyledTableCell>
+                                    <div className="flex justify-start space-x-2">
+                                        <button
+                                            onClick={() => handleEdit(row.componentId)}
+                                            className="button edit-button flex items-center space-x-1"
+                                        >
+                                            <AiOutlineEdit aria-hidden="true" className="h-4 w-4" />
+                                            <span>Edit</span>
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(row.componentId)}
+                                            className="button delete-button flex items-center space-x-1"
+                                        >
+                                            <MdOutlineCancel aria-hidden="true" className="h-4 w-4 font-small" />
+                                            <span>Delete</span>
+                                        </button>
+                                    </div>
+                                </StyledTableCell>
+                            </StyledTableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+        
+</div>
     );
 };
 

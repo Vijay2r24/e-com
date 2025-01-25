@@ -6,6 +6,7 @@ import axios from 'axios';
 import { BrandsContext } from '../Context/BrandsContext'
 import { CategoriesContext } from '../Context/CategoriesContext'
 import { Combobox } from '@headlessui/react';
+import {createBrand,updateBrandById,getBrandById} from "../../Constants/apiRoutes"
 
 const Step1 = () => {
     const [editMode, setEditMode] = useState(false);
@@ -59,7 +60,7 @@ const Step1 = () => {
         };
 
         try {
-            const response = await fetch('https://electronic-ecommerce.onrender.com/api/createBrand', {
+            const response = await fetch(createBrand, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -130,7 +131,7 @@ const Step1 = () => {
         };
 
         try {
-            const response = await fetch(`https://electronic-ecommerce.onrender.com/api/updateBrand/${BrandID}`, {
+            const response = await fetch(`${updateBrandById}/${BrandID}`, {
                 method: 'PUT', // Change method to PUT for updating
                 headers: {
                     'Content-Type': 'application/json'
@@ -190,7 +191,7 @@ const Step1 = () => {
 
     useEffect(() => {
         if (BrandID) {
-            axios.get(`https://electronic-ecommerce.onrender.com/api/getBrandById/${BrandID}`)
+            axios.get(`${getBrandById}/${BrandID}`)
                 .then(response => {
                     if (response.data.statusCode === "SUCCESS") {
                         setBrand(response.data.data);

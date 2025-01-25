@@ -14,7 +14,7 @@ import {
   StyledTableRow,
   TablePaginationActions,
 } from "../CustomTablePagination";
-
+import { DeleteCategory,getAllCategories } from '../../Constants/apiRoutes';
 const CategoryTable = () => {
   const [categories, setCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
@@ -33,7 +33,7 @@ const CategoryTable = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    axios.get('https://electronic-ecommerce.onrender.com/api/getAllCategories')
+    axios.get(getAllCategories)
       .then(response => {
         if (response.data && response.data.Data) {
           const cleanedCategories = response.data.Data.map(category => ({
@@ -80,7 +80,7 @@ const CategoryTable = () => {
   );
   const deleteCategory = async (categoryID) => {
     try {
-      const response = await fetch(`https://electronic-ecommerce.onrender.com/api/deleteCategory/${categoryID}`, {
+      const response = await fetch(`${DeleteCategory}/${categoryID}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

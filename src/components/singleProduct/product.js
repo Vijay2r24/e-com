@@ -637,14 +637,14 @@ useEffect(() => {
   return (
     <div>
       {isLoading && <LoadingAnimation />}
-      <div className="flex justify-between items-start min-h-scree pt-4">
+      
         {/* Left Side */}
         <ToastContainer />
 
         {/* You can add content here for the left side */}
-
-        <div className="w-[25%] bg-white border border-gray-200 rounded-lg p-6 space-y-4">
-          <div>
+        <div className="flex flex-col md:flex-row gap-4">
+        <div className="w-full md:w-[25%]">
+          <div className=' bg-white border border-gray-200 rounded-lg p-6 space-y-4'>
             <div
               className="w-full h-64 bg-gray-100 flex items-center justify-center rounded-md cursor-pointer"
               onClick={() => {
@@ -729,7 +729,7 @@ useEffect(() => {
                 </div>
               </div>
             )}
-          </div>
+          
           {/* Title */}
           <h3 className="text-xl font-semibold text-gray-800">
             {formData?.productName || "Default Name"}{" "}
@@ -810,8 +810,9 @@ useEffect(() => {
             </div>
 
           </div>
+          </div>
         </div>
-        <div className="w-[74%]">
+        <div className="w-full md:w-[74%]">
           <div className="bg-white p-8 rounded-lg border border-gray-200">
             {/* Header */}
             <h2 className="text-lg font-medium text-gray-800">Add Product Photos</h2>
@@ -952,7 +953,6 @@ useEffect(() => {
               </div>
             )}
           </div>
-
           <div className=" bg-white p-8 rounded-lg mt-8 border border-gray-200">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">Product Information</h2>
             {/* First Row */}
@@ -1476,8 +1476,8 @@ useEffect(() => {
             Cancel
           </button>
         </div>
+        </div>
 
-      </div>
     </div>
   );
 };

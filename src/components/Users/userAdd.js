@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
+import { ChevronUpDownIcon, CheckIcon } from '@heroicons/react/20/solid';
 import { Combobox } from "@headlessui/react";
 import { FaEye, FaEyeSlash, FaChevronDown } from "react-icons/fa";
 import { FiTrash, FiEye } from "react-icons/fi";
@@ -7,6 +8,7 @@ import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import { useParams } from "react-router-dom";
 import { userCreateOrUpdate, getUserById } from "../../Constants/apiRoutes"
+import { LocationDataContext } from "../Context/DataContext";
 const UserRegistrationPage = () => {
   const [formData1, setFormData1] = useState({
     FirstName: "",
@@ -15,6 +17,9 @@ const UserRegistrationPage = () => {
     CityID: "",
     StateID: "",
     CountryID: "",
+    CountryName:"",
+    StateName:"",
+    CityName:"",
     AddressLine1: "",
     PhoneNumber: "",
     Email: "",
@@ -26,6 +31,10 @@ const UserRegistrationPage = () => {
   useEffect(() => {
     console.log("Form Data:", formData1.FirstName);
   }, [formData1]);
+  const [queryCountry, setQueryCountry] = useState("");
+  const [queryState, setQueryState] = useState("");
+  const [queryCity, setQueryCity] = useState("");
+  const { citiesData, statesData, countriesData } = useContext(LocationDataContext);
   const { userId } = useParams();
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -55,36 +64,33 @@ const UserRegistrationPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [countries] = useState([
-    { CountryID: 1, CountryName: "USA" },
-    { CountryID: 2, CountryName: "India" },
-  ]);
-
-  const [states] = useState([
-    { StateID: 1, StateName: "California", CountryID: 1 },
-    { StateID: 2, StateName: "Texas", CountryID: 1 },
-    { StateID: 3, StateName: "Maharashtra", CountryID: 2 },
-    { StateID: 4, StateName: "Karnataka", CountryID: 2 },
-  ]);
-
-  const [cities] = useState([
-    { CityID: 1, CityName: "Los Angeles", StateID: 1 },
-    { CityID: 2, CityName: "Houston", StateID: 2 },
-    { CityID: 3, CityName: "Mumbai", StateID: 3 },
-    { CityID: 4, CityName: "Bangalore", StateID: 4 },
-  ]);
+   const [countries, setCountries] = useState([]);
+    const [states, setStates] = useState([]);
+    const [cities, setCities] = useState([]);
+useEffect(() => {
+    if (countriesData && statesData && citiesData) {
+      setCountries(countriesData.data || []);
+      setStates(statesData.data || []);
+      setCities(citiesData.data || []);
+    }
+  }, [countriesData, statesData, citiesData]);
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+  // const handleSelectionChange = (field, value) => {
+  //   setFormData1((prev) => ({
+  //     ...prev,
+  //     [field]: value,
+  //     ...(field === "CountryID" ? { StateID: null, CityID: null } : {}),
+  //     ...(field === "StateID" ? { CityID: null } : {}),
+  //   }));
+  // };
   const handleSelectionChange = (field, value) => {
     setFormData1((prev) => ({
       ...prev,
       [field]: value,
-      ...(field === "CountryID" ? { StateID: null, CityID: null } : {}),
-      ...(field === "StateID" ? { CityID: null } : {}),
     }));
   };
-
   const filteredStates = states.filter(
     (state) => state.CountryID === formData1.CountryID
   );
@@ -134,8 +140,8 @@ const UserRegistrationPage = () => {
 
           // Check for a successful statusCode (handle potential variations)
           if (response.data.StatusCode == "SUCCESS") {
-            setUser(response.data.data);
-            console.log("setUser", response.data.data);  // Log the data directly here
+            setUser(response.data.user);
+            console.log("setUser", response.data.user);  // Log the data directly here
           } else {
             // Log the error message directly if the statusCode is not as expected
             console.error("Failed to fetch user:", response.data.message || "Unknown error");
@@ -160,11 +166,11 @@ const UserRegistrationPage = () => {
         FirstName: user.FirstName,
         LastName: user.LastName,
         PinCode: user.Pincode,
-        CityID: user.CityID,
-        StateID: user.StateID,
-        CountryID: user.CountryID,
         AddressLine1: user.AddressLine,
         PhoneNumber: user.PhoneNumber,
+        CountryName: user.CountryName,
+        CityName: user.CityName,
+        StateName: user.StateName,
         Email: user.Email,
         Password: "",
         ConfirmPassword: "",
@@ -174,6 +180,7 @@ const UserRegistrationPage = () => {
     }
   }, [editMode]);
   const handleSubmit = async (e) => {
+    console.log("formdata",formData1.CountryName)
     if (handleValidation()) {
       console.log("Form submitted:", formData1);
     }
@@ -328,110 +335,165 @@ const UserRegistrationPage = () => {
         </div>
       </div>
 
+
       <div className="flex gap-4 mt-4">
         {/* Country Combobox */}
         <div className="w-full">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Country
+            Country <span className="text-red-500">*</span>
           </label>
           <Combobox
+            as="div"
             value={formData1.CountryID}
-            onChange={(value) => handleSelectionChange("CountryID", value)}
+            onChange={(value) => {
+              const selectedCountry = countries.find((country) => country.CountryID === value);
+              handleSelectionChange('CountryID', value);
+              setFormData1({
+                ...formData1,
+                CountryID: value,
+                CountryName: selectedCountry?.CountryName || '',
+                StateID: '', // Reset StateID and CityID on country change
+                StateName: '',
+                CityID: '',
+                CityName: '',
+              });
+            }}
           >
             <div className="relative">
               <Combobox.Input
                 className={inputClassName}
-                displayValue={(id) =>
-                  countries.find((country) => country.CountryID === id)?.CountryName || ""
-                }
+                onChange={(event) => setQueryCountry(event.target.value)}
+                displayValue={() => formData1.CountryName || ''}
                 placeholder="Select Country"
               />
-              <Combobox.Button className={comboboxButtonClassName}>
-                <FaChevronDown />
+              <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </Combobox.Button>
-              <Combobox.Options className={comboboxOptionsClassName}>
-                {countries.map((country) => (
-                  <Combobox.Option
-                    key={country.CountryID}
-                    value={country.CountryID}
-                    className="cursor-pointer hover:bg-gray-100 px-4 py-2"
-                  >
-                    {country.CountryName}
-                  </Combobox.Option>
-                ))}
+              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                {countries
+                  .filter((country) => country.CountryName.toLowerCase().includes(queryCountry.toLowerCase()))
+                  .map((country) => (
+                    <Combobox.Option
+                      key={country.CountryID}
+                      value={country.CountryID}
+                      className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-indigo-600 hover:text-white"
+                    >
+                      <span className="block truncate font-normal group-data-[selected]:font-semibold">
+                        {country.CountryName}
+                      </span>
+                      <span className="absolute inset-y-0 right-0 hidden items-center pr-4 text-indigo-600 group-data-[selected]:flex group-data-[focus]:text-white">
+                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                      </span>
+                    </Combobox.Option>
+                  ))}
               </Combobox.Options>
             </div>
           </Combobox>
+          {errors.CountryError && !formData1.CountryID && <p className="text-red-500 text-sm mt-1">{errors.CountryError}</p>}
         </div>
 
         {/* State Combobox */}
         <div className="w-full">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            State
+            State <span className="text-red-500">*</span>
           </label>
           <Combobox
+            as="div"
             value={formData1.StateID}
-            onChange={(value) => handleSelectionChange("StateID", value)}
+            onChange={(value) => {
+              const selectedState = states.find((state) => state.StateID === value);
+              handleSelectionChange('StateID', value);
+              setFormData1({
+                ...formData1,
+                StateID: value,
+                StateName: selectedState?.StateName || '',
+                CityID: '',
+                CityName: '',
+              });
+            }}
           >
             <div className="relative">
               <Combobox.Input
-                className={inputClassName}
-                displayValue={(id) =>
-                  filteredStates.find((state) => state.StateID === id)?.StateName || ""
-                }
+               className={inputClassName}
+                onChange={(event) => setQueryState(event.target.value)}
+                displayValue={() => formData1.StateName || ''}
                 placeholder="Select State"
               />
-              <Combobox.Button className={comboboxButtonClassName}>
-                <FaChevronDown />
+              <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </Combobox.Button>
-              <Combobox.Options className={comboboxOptionsClassName}>
-                {filteredStates.map((state) => (
-                  <Combobox.Option
-                    key={state.StateID}
-                    value={state.StateID}
-                    className="cursor-pointer hover:bg-gray-100 px-4 py-2"
-                  >
-                    {state.StateName}
-                  </Combobox.Option>
-                ))}
+              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                {states
+                  .filter((state) => state.StateName.toLowerCase().includes(queryState.toLowerCase()))
+                  .map((state) => (
+                    <Combobox.Option
+                      key={state.StateID}
+                      value={state.StateID}
+                      className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-indigo-600 hover:text-white"
+                    >
+                      <span className="block truncate font-normal group-data-[selected]:font-semibold">
+                        {state.StateName}
+                      </span>
+                      <span className="absolute inset-y-0 right-0 hidden items-center pr-4 text-indigo-600 group-data-[selected]:flex group-data-[focus]:text-white">
+                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                      </span>
+                    </Combobox.Option>
+                  ))}
               </Combobox.Options>
             </div>
           </Combobox>
+          {errors.StateError && !formData1.StateID && <p className="text-red-500 text-sm mt-1">{errors.StateError}</p>}
         </div>
 
         {/* City Combobox */}
         <div className="w-full">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            City
+            City <span className="text-red-500">*</span>
           </label>
           <Combobox
+            as="div"
             value={formData1.CityID}
-            onChange={(value) => handleSelectionChange("CityID", value)}
+            onChange={(value) => {
+              const selectedCity = cities.find((city) => city.CityID === value);
+              handleSelectionChange('CityID', value);
+              setFormData1({
+                ...formData1,
+                CityID: value,
+                CityName: selectedCity?.CityName || '',
+              });
+            }}
           >
             <div className="relative">
               <Combobox.Input
-                className={inputClassName}
-                displayValue={(id) =>
-                  filteredCities.find((city) => city.CityID === id)?.CityName || ""
-                }
+               className={inputClassName}
+                onChange={(event) => setQueryCity(event.target.value)}
+                displayValue={() => formData1.CityName || ''}
                 placeholder="Select City"
               />
-              <Combobox.Button className={comboboxButtonClassName}>
-                <FaChevronDown />
+              <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </Combobox.Button>
-              <Combobox.Options className={comboboxOptionsClassName}>
-                {filteredCities.map((city) => (
-                  <Combobox.Option
-                    key={city.CityID}
-                    value={city.CityID}
-                    className="cursor-pointer hover:bg-gray-100 px-4 py-2"
-                  >
-                    {city.CityName}
-                  </Combobox.Option>
-                ))}
+              <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                {cities
+                  .filter((city) => city.CityName.toLowerCase().includes(queryCity.toLowerCase()))
+                  .map((city) => (
+                    <Combobox.Option
+                      key={city.CityID}
+                      value={city.CityID}
+                      className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-indigo-600 hover:text-white"
+                    >
+                      <span className="block truncate font-normal group-data-[selected]:font-semibold">
+                        {city.CityName}
+                      </span>
+                      <span className="absolute inset-y-0 right-0 hidden items-center pr-4 text-indigo-600 group-data-[selected]:flex group-data-[focus]:text-white">
+                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                      </span>
+                    </Combobox.Option>
+                  ))}
               </Combobox.Options>
             </div>
           </Combobox>
+          {errors.CityError && !formData1.CityID && <p className="text-red-500 text-sm mt-1">{errors.CityError}</p>}
         </div>
       </div>
 

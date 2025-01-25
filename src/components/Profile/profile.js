@@ -130,9 +130,6 @@ const ProfilePage = () => {
 
         </div>
       </div>
-
-
-
       <div className="mt-6">
         <div className="grid grid-cols-12 gap-6">
           {/* Basic Information Section (Left side) */}

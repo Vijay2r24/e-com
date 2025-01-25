@@ -1,4 +1,4 @@
-import React from "react";
+import {React,useState} from "react";
 import { Link } from "react-router-dom";
 import {
   FaUsers,
@@ -13,7 +13,11 @@ import {
   FaUser,
   FaCartPlus,
   FaStore,
-  FaBell
+  FaBell,
+  FaHome,
+  FaFolder,
+  FaClipboardList,
+  FaThList,
 } from "react-icons/fa";
 import { MdOutlineBusiness,MdAssessment } from 'react-icons/md';
 import { GiShoppingBag } from 'react-icons/gi';
@@ -23,22 +27,23 @@ import { MdOutlineEditNotifications } from "react-icons/md";
 import { MdOutlineDynamicFeed } from "react-icons/md";
 
 const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
+  const [selectedItem, setSelectedItem] = useState(null);
+
   const sidebarItems = [
-    { icon: <FaShoppingCart />, label: "Dashboard", path: "/dashboard" },
-    { icon: <GiShoppingBag />, label: "Browse", path: "/Browse/step1/create" },
-    { icon: <FaInbox />, label: "Orders", path: "/orders" },
+    { icon: <FaHome />, label: "Dashboard", path: "/dashboard" },
+    { icon: <FaFolder />, label: "Browse", path: "/Browse/step1/create" },
+    { icon: <FaClipboardList />, label: "Orders", path: "/orders" },
     { icon: <FaCartPlus />, label: "Add Products", path: "/products" },
-    { icon: <FaBoxOpen />, label: "All Products", path: "/all-products" },
+    { icon: <FaThList />, label: "Products", path: "/all-products" },
     { icon: <FaUser />, label: "Profile", path: "/Profile" },
     { icon: <FaUsers />, label: "Users", path: "/UserList" },
     { icon: <FaStore />, label: "Stores", path: "/storeList" },
     { icon: <FaBell />, label: "Notifications", path: "/Notifications/pushNotification" },
-    { icon: <MdOutlineDynamicFeed /> , label: "Dynamic UI", path:"/dynamicui" },
-    // { icon: <MdAssessment />, label: "Banner Form", path:"/bannerform" }
+    { icon: <MdOutlineDynamicFeed />, label: "Dynamic UI", path: "/dynamicui" },
   ];
 
   return (
-    <>
+<>
       {/* Sidebar overlay for small screens */}
       <div
         className={`fixed inset-0 bg-black bg-opacity-50 z-10 transition-opacity lg:hidden ${
@@ -55,7 +60,7 @@ const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
       >
         {/* Logo and Close Icon for small screens */}
         <div className="flex justify-between items-center p-2.5 border-b-2">
-        <img src={Logo} alt="Logo" className="w-14 h-11 object-contain" />
+          <img src={Logo} alt="Logo" className="w-14 h-11 object-contain" />
           <button
             onClick={toggleSidebar}
             className="lg:hidden text-gray-500 hover:text-gray-800"
@@ -64,27 +69,18 @@ const Sidebar = ({ user, isOpen, setIsOpen, onSelectItem, toggleSidebar }) => {
           </button>
         </div>
 
-        {/* {user && (
-          <div className="flex justify-center items-center gap-2 my-4">
-            <img
-              src={user.avatar}
-              alt={user.name}
-              className="w-16 h-16 rounded-full"
-            />
-            <div className="flex flex-col text-left">
-              <p className="font-semibold">{user.name}</p>
-              <p className="text-sm text-gray-500">{user.email}</p>
-            </div>
-          </div>
-        )} */}
-
-        <ul className="space-y-6 mx-4 mt-2 p-2">
+        <ul className="space-y-2 mx-2 mt-2 p-1">
           {sidebarItems.map((item, index) => (
-            <li key={index}>
+            <li key={index} className="text-sm">
               <Link
                 to={item.path}
-                className="flex items-center space-x-2 hover:text-purple-800 cursor-pointer transition-colors duration-200"
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors duration-200 ${
+                  selectedItem === item.label
+                    ? "bg-pacific-500 text-white"
+                    : "hover:bg-gray-100"
+                }`}
                 onClick={() => {
+                  setSelectedItem(item.label);
                   onSelectItem(item.label);
                   setIsOpen(false);
                 }}

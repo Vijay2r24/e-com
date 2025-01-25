@@ -47,6 +47,7 @@ import BannerForm from "./components/Dynamic_Banner_Image/banner_Image";
 import  ExpoSnackEmbed from "./ExpoSnackEmbed";
 import SilentNotification from "./components/PushNotification/silentnotification";
 import Notifications from "./components/PushNotification/Home";
+import RolesList from "./components/UserRoles/UserList"
 
 const AppRoutes = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -271,6 +272,7 @@ const AppRoutes = () => {
           path: "/Browse/product",
           element: <ProductCreation />,
         },
+
         {
           path: "/brands/:BrandID",
           element: <Brands />,
@@ -314,6 +316,10 @@ const AppRoutes = () => {
         {
           path: "/customers",
           element: <Customers />,
+        },
+        {
+          path: "/RolesList",
+          element: <RolesList />,
         },
         {
           path: "/reports",

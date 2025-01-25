@@ -7,7 +7,7 @@ import SearchBar from "../search_bar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MdEdit } from "react-icons/md";
-import {getAllUsers,deleteUser} from "../../Constants/apiRoutes"
+import {GETALLROLESS_API,deleteUser} from "../../Constants/apiRoutes"
 import {
   Table,
   TableBody,
@@ -36,10 +36,10 @@ const UsersPage = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch(getAllUsers); // Replace with your API endpoint
+        const response = await fetch(GETALLROLESS_API); // Replace with your API endpoint
         const data = await response.json();
         if (data.StatusCode === "SUCCESS") {
-          setUsers(data.users);
+          setUsers(data.roles);
         } else {
           console.error("Failed to fetch users:", data.message);
         }
@@ -124,10 +124,10 @@ const UsersPage = () => {
       <div className="flex items-center justify-between p-4 gap-4">
       <SearchBar onSearch={setSearchQuery} className="h-10" />
         <button
-          onClick={() => navigate("/UserAdd")}
+          onClick={() => navigate("/userform")}
           className="bg-pacific-500 text-white px-4 py-2 rounded hover:bg-pacific-600 whitespace-nowrap h-10"
         >
-          + Add User
+          + Add Role
         </button>
         <button
           onClick={() => setViewMode(viewMode === "table" ? "grid" : "table")}
@@ -143,11 +143,10 @@ const UsersPage = () => {
           <Table sx={{ minWidth: 700 }} aria-label="user table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Name</StyledTableCell>
-                <StyledTableCell>Email</StyledTableCell>
-                <StyledTableCell>Mobile No</StyledTableCell>
-                <StyledTableCell>Roles</StyledTableCell>
-                <StyledTableCell>Gender</StyledTableCell>
+                <StyledTableCell>RoleID</StyledTableCell>
+                <StyledTableCell>RoleName</StyledTableCell>
+                <StyledTableCell>Status</StyledTableCell>
+                <StyledTableCell>StoreName</StyledTableCell>
                 <StyledTableCell>Actions</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -155,19 +154,13 @@ const UsersPage = () => {
               {currentUsers.map((user) => (
                 <StyledTableRow key={user.id}>
                   <StyledTableCell>
-                    <div className="flex items-center space-x-3">
-                      <img
-                        src={user.ProfileImageUrl}
-                        alt={user.name}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                      <span>{user.LastName} {user.FirstName}</span>
-                    </div>
+                   {user.RoleID}
                   </StyledTableCell>
-                  <StyledTableCell>{user.Email}</StyledTableCell>
-                  <StyledTableCell>{user.PhoneNumber}</StyledTableCell>
                   <StyledTableCell>{user.RoleName}</StyledTableCell>
-                  <StyledTableCell>{user.Gender}</StyledTableCell>
+                  <StyledTableCell>{user.Status}</StyledTableCell>
+                  <StyledTableCell>{user.StoreName}</StyledTableCell>
+
+                
                   <StyledTableCell>
                     <div className="flex justify-start space-x-2">
                       <button
@@ -196,12 +189,7 @@ const UsersPage = () => {
         {currentUsers.map((user) => (
           <div key={user.id} className="bg-white rounded-lg p-6 border border-gray-200 relative">
             <div className="text-center">
-              <img
-                src={user.ProfileImageUrl}
-                alt={user.name}
-                className="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-gray-100"
-              />
-              <h3 className="text-xl font-semibold text-gray-800">{user.FirstName}</h3>
+              <h3 className="text-xl font-semibold text-gray-800">{user.RoleID}</h3>
               <p className="text-gray-600 font-medium text-sm">{user.Email}</p>
               <p className="text-gray-600 text-sm">{user.PhoneNumber}</p>
               <p className="text-gray-600 text-sm">{user.RoleName}</p>

@@ -922,7 +922,7 @@ const Profile = () => {
                       <div className="flex items-center">
                         <p className="text-sm font-semibold text-gray-500 w-1/3">Employee ID</p>
                         <span className="text-gray-800 mr-4 md:mr-8">:</span>
-                        <p className="text-sm font-medium text-gray-700">{logindata.EmployeeID}</p>
+                        <p className="text-sm font-medium text-gray-700">{logindata.UserEmployeeID}</p>
                       </div>
                     </div>
 
@@ -936,7 +936,7 @@ const Profile = () => {
                       <div className="flex items-center">
                         <p className="text-sm font-semibold text-gray-500 w-1/3">Role</p>
                         <span className="text-gray-800 mr-4 md:mr-8">:</span>
-                        <p className="text-sm font-medium text-gray-700">{selectedRole?.RoleName}</p>
+                        <p className="text-sm font-medium text-gray-700">{logindata?.RoleName}</p>
                       </div>
                     </div>
 
@@ -957,14 +957,14 @@ const Profile = () => {
                     {/* Address Section */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-2 pb-4 px-4 md:px-20">
                       <div className="flex items-center">
-                        <p className="text-sm font-semibold text-gray-500 w-1/3">Address Line 1</p>
+                        <p className="text-sm font-semibold text-gray-500 w-1/3">Address Line</p>
                         <span className="text-gray-800 mr-4 md:mr-8">:</span>
                         <p className="text-sm font-medium text-gray-700">{logindata.AddressLine}</p>
                       </div>
                       <div className="flex items-center">
-                        <p className="text-sm font-semibold text-gray-500 w-1/3">Address Line 2</p>
+                        <p className="text-sm font-semibold text-gray-500 w-1/3">Zip code</p>
                         <span className="text-gray-800 mr-4 md:mr-8">:</span>
-                        <p className="text-sm font-medium text-gray-700">{logindata?.AddressLine2}</p>
+                        <p className="text-sm font-medium text-gray-700">{logindata?.Pincode}</p>
                       </div>
                     </div>
 
