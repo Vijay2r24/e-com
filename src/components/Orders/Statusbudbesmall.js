@@ -14,16 +14,15 @@ const StatusBadge = ({ status }) => {
 
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-full w-36 h-8 text-xs font-semibold text-white ring-1 ring-inset`}
-      style={{
-        backgroundColor: badgeColor,
-        boxShadow: `0 0 0 1px ${badgeColor}30`,
-      }}
-    >
-      {status}
-    </span>
+    className={`px-3 py-1 rounded-full text-white text-xs`}
+    style={{
+      backgroundColor: badgeColor,
+      boxShadow: `0 0 0 1px ${badgeColor}30`,
+    }}
+  >
+    {status}
+  </span>
   );
 };
 
 export default StatusBadge;
-

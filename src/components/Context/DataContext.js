@@ -7,6 +7,7 @@ const LocationDataProvider = ({ children }) => {
   const [citiesData, setCitiesData] = useState([]);
   const [statesData, setStatesData] = useState([]);
   const [countriesData, setCountriesData] = useState([]);
+  const [orderStatusData, setOrderStatusData] = useState([]); // Add order status data
   const [loading, setLoading] = useState(true); // Loading state
 
   const fetchDataFromLocalStorage = (key, setter) => {
@@ -27,6 +28,7 @@ const LocationDataProvider = ({ children }) => {
       fetchDataFromLocalStorage("citiesData", setCitiesData);
       fetchDataFromLocalStorage("statesData", setStatesData);
       fetchDataFromLocalStorage("countriesData", setCountriesData);
+      fetchDataFromLocalStorage("orderStatusData", setOrderStatusData); // Fetch order status data
 
       // Finish loading
       setLoading(false);
@@ -37,7 +39,13 @@ const LocationDataProvider = ({ children }) => {
 
   return (
     <LocationDataContext.Provider
-      value={{ citiesData, statesData, countriesData, loading }}
+      value={{
+        citiesData,
+        statesData,
+        countriesData,
+        orderStatusData, // Provide order status data
+        loading,
+      }}
     >
       {children}
     </LocationDataContext.Provider>
@@ -45,3 +53,4 @@ const LocationDataProvider = ({ children }) => {
 };
 
 export default LocationDataProvider;
+

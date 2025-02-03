@@ -91,13 +91,6 @@ useEffect(() => {
       [field]: value,
     }));
   };
-  const filteredStates = states.filter(
-    (state) => state.CountryID === formData1.CountryID
-  );
-
-  const filteredCities = cities.filter(
-    (city) => city.StateID === formData1.StateID
-  );
 
 
   const inputClassName =
@@ -153,7 +146,11 @@ useEffect(() => {
         });
     }
   }, [userId]);
+  const filterStates = (countryID) =>
+    statesData.data.filter((state) => state.CountryID === countryID);
 
+  const filterCities = (stateID) =>
+    citiesData.data.filter((city) => city.StateID === stateID);
   useEffect(() => {
     if (user) {
       setEditMode(Boolean(user.UserID)); // Set editMode based on userBrand data
@@ -162,6 +159,15 @@ useEffect(() => {
   useEffect(() => {
     console.log("editMode", editMode)
     if (editMode) {
+      const selectedCountry = countries.find(
+        (country) => country.CountryName === user.CountryName
+      );
+      const selectedState = states.find(
+        (state) => state.StateName === user.StateName
+      );
+      const selectedCity = cities.find(
+        (city) => city.CityName === user.CityName
+      );
       setFormData1({
         FirstName: user.FirstName,
         LastName: user.LastName,
@@ -172,6 +178,9 @@ useEffect(() => {
         CityName: user.CityName,
         StateName: user.StateName,
         Email: user.Email,
+        CountryID:selectedCountry ? selectedCountry.CountryID : "",
+        StateID:selectedState ? selectedState.StateID : "",
+        CityID:selectedCity ? selectedCity.CityID : "",
         Password: "",
         ConfirmPassword: "",
         imagePreview: user.ProfileImageUrl,
@@ -347,7 +356,7 @@ useEffect(() => {
             value={formData1.CountryID}
             onChange={(value) => {
               const selectedCountry = countries.find((country) => country.CountryID === value);
-              handleSelectionChange('CountryID', value);
+              handleSelectionChange('CountryID', value)
               setFormData1({
                 ...formData1,
                 CountryID: value,
@@ -357,6 +366,7 @@ useEffect(() => {
                 CityID: '',
                 CityName: '',
               });
+              setStates(filterStates(value));
             }}
           >
             <div className="relative">
@@ -410,6 +420,7 @@ useEffect(() => {
                 CityID: '',
                 CityName: '',
               });
+              setCities(filterCities(value));
             }}
           >
             <div className="relative">

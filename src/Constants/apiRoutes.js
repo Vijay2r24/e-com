@@ -46,3 +46,5 @@ export const getCategoryById=`${BASE_URL}/getCategoryById`;
 export const UpdateCategory=`${BASE_URL}/updateCategory`;
 export const getAllCategories=`${BASE_URL}/getAllCategories`;
 export const DeleteCategory=`${BASE_URL}/deleteCategory`;
+export const getAllOrderStatus=`${BASE_URL}/getAllOrderStatus`;
+export const userlogin=`${BASE_URL}/userlogin`;

@@ -186,8 +186,22 @@ const UserForm = () => {
       setEditMode(Boolean(storeId)); // Set editMode based on categoryData
     }
   }, [storeId]);
+  const filterStates = (countryID) =>
+    statesData.data.filter((state) => state.CountryID === countryID);
+
+  const filterCities = (stateID) =>
+    citiesData.data.filter((city) => city.StateID === stateID);
   useEffect(() => {
     if (editMode && storeData) { // Ensure storeData is not null or undefined
+      const selectedCountry = countries.find(
+        (country) => country.CountryName === storeData.CountryName
+      );
+      const selectedState = states.find(
+        (state) => state.StateName === storeData.StateName
+      );
+      const selectedCity = cities.find(
+        (city) => city.CityName === storeData.CityName
+      );
       setFormData1({
         StoreID: storeData.StoreID || "",
         StoreName: storeData.StoreName || "",
@@ -199,9 +213,9 @@ const UserForm = () => {
         CountryName: storeData.CountryName,
         StateName: storeData.StateName,
         ZipCode: storeData.ZipCode,
-        CityID: "",
-        StateID: "",
-        CountryID: "",
+        CityID: selectedCity ? selectedCity.CityID : "",
+        StateID: selectedState ? selectedState.StateID : "",
+        CountryID: selectedCountry ? selectedCountry.CountryID : "",
         ZipCode: storeData.ZipCode || "",
         imagePreview: "",
         Password: "",
@@ -318,6 +332,7 @@ const UserForm = () => {
                 CityID: '',
                 CityName: '',
               });
+              setStates(filterStates(value));
             }}
           >
             <div className="relative">
@@ -371,6 +386,7 @@ const UserForm = () => {
                 CityID: '',
                 CityName: '',
               });
+              setCities(filterCities(value));
             }}
           >
             <div className="relative">

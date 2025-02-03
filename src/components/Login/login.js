@@ -5,7 +5,7 @@ import loginBanner from "../../assets/images/Frame 15.png";
 import cart from "../../assets/images/cart-148964_1280 1.png";
 import {jwtDecode} from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import {COUNTRIES_API,STATES_API,CITIES_API} from "../../Constants/apiRoutes"
+import {COUNTRIES_API,STATES_API,CITIES_API,getAllOrderStatus,userlogin} from "../../Constants/apiRoutes"
 
 // Example function definitions if you haven't defined them elsewhere
 // const fetchApiData = async () => {
@@ -19,6 +19,7 @@ const fetchApiData = async () => {
   const storedCitiesData = localStorage.getItem("citiesData");
   const storedStatesData = localStorage.getItem("statesData");
   const storedCountriesData = localStorage.getItem("countriesData");
+  const storedOrderStatusData = localStorage.getItem("orderStatusData");
 
   if (!storedCitiesData || !storedStatesData || !storedCountriesData) {
     try {
@@ -31,11 +32,18 @@ const fetchApiData = async () => {
       const resCountries = storedCountriesData
         ? JSON.parse(storedCountriesData)
         : await fetch(COUNTRIES_API).then((res) => res.json());
+        const resOrderStatus = storedOrderStatusData
+        ? JSON.parse(storedOrderStatusData)
+        : await fetch(getAllOrderStatus)
+            .then((res) => res.json())
+            .then((data) => data.data); // Access `data` from the API response.
+
 
       // Store in localStorage
       localStorage.setItem("citiesData", JSON.stringify(resCities));
       localStorage.setItem("statesData", JSON.stringify(resStates));
       localStorage.setItem("countriesData", JSON.stringify(resCountries));
+      localStorage.setItem("orderStatusData", JSON.stringify(resOrderStatus));
     } catch (error) {
       console.error("Error fetching API data:", error);
     }
@@ -59,7 +67,7 @@ const LoginScreen = () => {
 
     try {
       const response = await fetch(
-        "https://electronic-ecommerce.onrender.com/api/userlogin",
+        userlogin,
         {
           method: "POST",
           headers: {

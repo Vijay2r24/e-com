@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import { getOrderById, updateOrderItemStatus } from '../../Constants/apiRoutes';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
@@ -6,7 +6,9 @@ import { Combobox } from '@headlessui/react';
 import { HiChevronDown } from 'react-icons/hi'; // React Icon for dropdown
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { FaEdit, FaTrash, FaTable } from "react-icons/fa";
+import { LocationDataContext } from "../Context/DataContext";
+import  StatusBadge from "./Statusbudbesmall"
 const OrderDetailsScreen = () => {
     // Dummy dynamic data
     const [orderData, setOrderData] = useState(null);
@@ -14,24 +16,24 @@ const OrderDetailsScreen = () => {
     const [error, setError] = useState(null);
     const { orderId } = useParams();
     const [query, setQuery] = useState('');
-    useEffect(() => {
-        const fetchOrderData = async () => {
-            try {
-                // Assuming you have an API function like this
-                const response = await axios.get(`${getOrderById}/${orderId}`);
-                if (response.data.status === 'SUCCESS') {
-                    setOrderData(response.data.data); // Set the order data
-                    console.log("setOrderData", response.data.data); // Log the updated data immediately
-                } else {
-                    setError('Failed to fetch order data.');
-                }
-            } catch (err) {
+    const { orderStatusData } = useContext(LocationDataContext);
+    const fetchOrderData = async () => {
+        try {
+            const response = await axios.get(`${getOrderById}/${orderId}`);
+            if (response.data.status === 'SUCCESS') {
+                setOrderData(response.data.data);
+                console.log("setOrderData", response.data.data);
+            } else {
                 setError('Failed to fetch order data.');
-            } finally {
-                setLoading(false);
             }
-        };
+        } catch (err) {
+            setError('Failed to fetch order data.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         if (orderId) {
             fetchOrderData();
         }
@@ -98,7 +100,7 @@ const OrderDetailsScreen = () => {
 
         try {
             const response = await fetch(`${updateOrderItemStatus}/${orderId}`, {
-                method: "POST",
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -108,6 +110,9 @@ const OrderDetailsScreen = () => {
             if (response.ok) {
                 toast.success("Order item status updated successfully!");
                 closeDialog();
+
+                // Call the fetchOrderData function to reload the order data
+                fetchOrderData();
             } else {
                 const errorData = await response.json();
                 toast.error(errorData.message || "Failed to update order item status.");
@@ -161,15 +166,15 @@ const OrderDetailsScreen = () => {
                                     </Combobox.Button>
                                 </div>
                                 <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white shadow-lg z-10">
-                                    {filteredStatuses.map((status) => (
+                                     {orderStatusData.map((status) => (
                                         <Combobox.Option
-                                            key={status}
-                                            value={status}
+                                            key={status.OrderStatus}
+                                            value={status.OrderStatus}
                                             className={({ active }) =>
                                                 `cursor-pointer select-none px-4 py-2 ${active ? 'bg-blue-500 text-white' : 'text-gray-900'}`
                                             }
                                         >
-                                            {status}
+                                            {status.OrderStatus}
                                         </Combobox.Option>
                                     ))}
                                 </Combobox.Options>
@@ -335,14 +340,16 @@ const OrderDetailsScreen = () => {
                                                 ₹{(item.quantity * parseFloat(item.price || 0)).toFixed(2)}
                                             </td>
                                             <td className="px-4 py-2 text-sm text-gray-800">
-                                                {item.product?.orderHistory?.status || 'N/A'}
+                                            <StatusBadge status={item.product?.orderHistory?.status }/>
                                             </td>
+
                                             <td className="px-4 py-2 text-sm text-gray-800">
                                                 <button
-                                                    className="text-blue-600 hover:underline"
                                                     onClick={() => openDialog(item)}
+                                                    className="button edit-button flex items-center space-x-1"
                                                 >
-                                                    Edit
+                                                    <FaEdit aria-hidden="true" className="h-4 w-4" />
+                                                    <span>Edit</span>
                                                 </button>
                                             </td>
                                         </tr>
@@ -371,9 +378,9 @@ const OrderDetailsScreen = () => {
                                         onChange={(e) => setStatusId(Number(e.target.value))}
                                         className="w-full border rounded p-2"
                                     >
-                                        {statusOptions.map((option) => (
-                                            <option key={option.id} value={option.id}>
-                                                {option.name}
+                                        {orderStatusData.map((status) =>  (
+                                            <option key={status.StatusID} value={status.StatusID}>
+                                                {status.OrderStatus}
                                             </option>
                                         ))}
                                     </select>
@@ -390,13 +397,14 @@ const OrderDetailsScreen = () => {
                                 <div className="flex justify-end">
                                     <button
                                         onClick={closeDialog}
-                                        className="text-sm text-gray-700 px-4 py-2 mr-2 hover:bg-gray-100 rounded"
+                                        className="text-sm text-white bg-red-500 px-4 py-2 mr-2 rounded-lg shadow hover:bg-red-600 transition duration-200"
                                     >
                                         Cancel
                                     </button>
+
                                     <button
                                         onClick={handleUpdate}
-                                        className="text-sm text-white bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
+                                        className="text-sm text-white bg-pacific-500 px-4 py-2 rounded-lg hover:bg-pacific-600"
                                     >
                                         Update
                                     </button>
