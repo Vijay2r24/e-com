@@ -33,10 +33,13 @@ const ColorTable = ({ onEditAction }) => {
     const navigate = useNavigate();
 
     const deleteColor = async (ColourID) => {
+        const token = localStorage.getItem("token");
         try {
             const response = await fetch(`${deleteColorAPI}/${ColourID}`, {
                 method: "DELETE",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                 },
             });
             const result = await response.json();
             if (response.ok) {
@@ -72,9 +75,15 @@ const ColorTable = ({ onEditAction }) => {
     const handlePageChange = (event, value) => setCurrentPage(value);
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
         const fetchColors = async () => {
             try {
-                const response = await fetch(getAllColorsAPI);
+                const response = await fetch(getAllColorsAPI, {
+                    headers: {
+                      Authorization: `Bearer ${token}`, // Pass token in Authorization header
+                      
+                    },
+                });
                 const data = await response.json();
                 if (data.status === "SUCCESS") {
                     setColors(data.data);

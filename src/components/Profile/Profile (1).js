@@ -128,10 +128,11 @@ const Profile = () => {
       RoleID: "",
       AddressLine1: "",
       AddressLine2: "",
+      AddressLine:"",
       CityID: "",
       StateID: "",
       CountryID: "",
-      ZipCode: "",
+      Pincode: "",
       profileImageUrl: null,
       Comments: "",
       StoreID: "",
@@ -608,8 +609,8 @@ const Profile = () => {
     if (!formData.CityID) {
       newErrors.CityIdError = "City is required.";
     }
-    if (!formData.ZipCode) {
-      newErrors.ZipCodeError = "Zip Code is required.";
+    if (!formData.Pincode) {
+      newErrors.PincodeError = "Zip Code is required.";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length > 0;
@@ -1089,7 +1090,35 @@ const Profile = () => {
                       </div>
                     </div>
                     {/* Address Line 1 */}
-                    <div className="flex items-center">
+                    {/* <div className="flex items-center">
+                      <div className="w-full ">
+                        <label
+                          htmlFor="AddressLine1"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Address Line 1 <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          id="AddressLine1"
+                          name="AddressLine1"
+                          value={formData.AddressLine1 || ""}
+                          onChange={handleFormChange}
+                          required
+                          className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border shadow-sm py-2 px-4  sm:text-sm"
+                  ${!formData.AddressLine1 && errors.AddressLine1Error
+                              ? "border-red-400"
+                              : "border-gray-400"
+                            }`}
+                        />
+                        {!formData.AddressLine1 && errors.AddressLine1Error && (
+                          <p className="text-red-500 text-sm mt-1 ">
+                            {errors.AddressLine1Error}
+                          </p>
+                        )}
+                      </div>
+                    </div> */}
+                     <div className="flex items-center">
                       <div className="w-full ">
                         <label
                           htmlFor="AddressLine1"
@@ -1139,7 +1168,7 @@ const Profile = () => {
                     </div>
 
                     {/* Address Line 2 */}
-                    <div>
+                    {/* <div>
                       <label
                         htmlFor="AddressLine2"
                         className="block text-sm font-medium text-gray-700"
@@ -1154,7 +1183,7 @@ const Profile = () => {
                         onChange={handleFormChange}
                         className="mt-2 mb-1 block w-full xl:w-3/4 rounded-md border border-gray-400 shadow-sm py-2 px-4 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
-                    </div>
+                    </div> */}
 
                     {/* Email */}
                     <div>
@@ -1518,26 +1547,26 @@ const Profile = () => {
 
                     <div>
                       <label
-                        htmlFor="ZipCode"
+                        htmlFor="Pincode"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Zip Code <span className="text-red-500">*</span>
+                       Pin code<span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
-                        id="ZipCode"
-                        name="ZipCode"
-                        value={formData.ZipCode || ""}
+                        id="Pincode"
+                        name="Pincode"
+                        value={formData.Pincode || ""}
                         onChange={handleFormChange}
                         required
-                        className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border shadow-sm py-2 px-4  sm:text-sm ${!formData.ZipCode && errors.ZipCodeError
+                        className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border shadow-sm py-2 px-4  sm:text-sm ${!formData.Pincode && errors.PincodeError
                           ? "border-red-400"
                           : "border-gray-400"
                           }`}
                       />
-                      {!formData.ZipCode && errors.ZipCodeError && (
+                      {!formData.Pincode && errors.PincodeError && (
                         <p className="text-red-500 text-sm mt-1 ">
-                          {errors.ZipCodeError}
+                          {errors.PincodeError}
                         </p>
                       )}
                     </div>

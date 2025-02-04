@@ -90,9 +90,14 @@ const ProductTable = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
+      const token = localStorage.getItem("token");
       const apiUrl = `${getProductDetails}?pageNumber=${currentPage + 1}&pageSize=${itemsPerPage}`;
       try {
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass token in Authorization header
+          },
+          });
         const data = await response.json();
         if (data.statusCode === "SUCCESS") {
           setProducts(data.data);  // Assuming the data returned is the products array
@@ -109,11 +114,13 @@ const ProductTable = () => {
   }, [currentPage, itemsPerPage]);  //
 
   const deleteProduct = async (ProductID) => {
+    const token = localStorage.getItem("token");
     try {
       const response = await fetch(`${deleteProductWithImages}/${ProductID}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, 
         },
       });
       const result = await response.json();

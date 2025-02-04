@@ -5,6 +5,7 @@ import SearchBar from "../search_bar";
 import { useNavigate } from 'react-router-dom';
 import { getAllOrders } from '../../Constants/apiRoutes'
 import StatusBadge from "./Stusbudge";
+import LoadingAnimation from "../../components/Loader/loader";
 import {
   StyledTableCell,
   StyledTableRow,
@@ -13,6 +14,7 @@ import {
 
 const OrderTable = () => {
   const [order, setOrder] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -21,7 +23,13 @@ const OrderTable = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(getAllOrders) // Replace with your actual API URL
+    setIsLoading(true);
+    const token = localStorage.getItem("token");
+    fetch(getAllOrders, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Pass token in Authorization header
+      },
+    }) // Replace with your actual API URL
       .then((response) => response.json())
       .then((data) => {
         console.log("Fetched data:", data);
@@ -29,6 +37,7 @@ const OrderTable = () => {
         setFilteredOrders(Array.isArray(data.data) ? data.data : []);
       })
       .catch((error) => console.error("Error fetching data:", error));
+      setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -69,6 +78,7 @@ const OrderTable = () => {
   return (
     <div className="overflow-x-auto">
       {/* Search Bar */}
+      {isLoading && <LoadingAnimation />}
       <div className="flex items-center justify-between p-4">
         <SearchBar onSearch={setSearchQuery} />
       </div>

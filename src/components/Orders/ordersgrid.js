@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { getOrderById, updateOrderItemStatus } from '../../Constants/apiRoutes';
 import axios from 'axios';
 import { useParams } from "react-router-dom";
@@ -8,7 +8,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEdit, FaTrash, FaTable } from "react-icons/fa";
 import { LocationDataContext } from "../Context/DataContext";
-import  StatusBadge from "./Statusbudbesmall"
+import StatusBadge from "./Statusbudbesmall";
+import { ChevronDownIcon } from "@heroicons/react/solid";
+
 const OrderDetailsScreen = () => {
     // Dummy dynamic data
     const [orderData, setOrderData] = useState(null);
@@ -18,8 +20,14 @@ const OrderDetailsScreen = () => {
     const [query, setQuery] = useState('');
     const { orderStatusData } = useContext(LocationDataContext);
     const fetchOrderData = async () => {
+        const token = localStorage.getItem("token");
         try {
-            const response = await axios.get(`${getOrderById}/${orderId}`);
+            const response = await axios.get(`${getOrderById}/${orderId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+
+                },
+            });
             if (response.data.status === 'SUCCESS') {
                 setOrderData(response.data.data);
                 console.log("setOrderData", response.data.data);
@@ -66,20 +74,12 @@ const OrderDetailsScreen = () => {
     const [remarks, setRemarks] = useState("");
 
     // Sample status options with ID and name
-    const statusOptions = [
-        { id: 1, name: "Pending" },
-        { id: 2, name: "Processing" },
-        { id: 3, name: "Shipped" },
-        { id: 4, name: "Delivered" },
-        { id: 5, name: "Canceled" },
-    ];
-
     const openDialog = (item) => {
         setCurrentItem(item);
-        const currentStatus = statusOptions.find(
-            (option) => option.name === item?.orderItems?.orderHistory?.status
-        );
-        setStatusId(currentStatus?.id || 1); // Default to "Pending" ID
+        // const currentStatus = statusOptions.find(
+        //     (option) => option.name === item?.orderItems?.orderHistory?.status
+        // );
+        // setStatusId(currentStatus?.id || 1); // Default to "Pending" ID
         setRemarks("");
         setIsDialogOpen(true);
     };
@@ -97,12 +97,13 @@ const OrderDetailsScreen = () => {
             StatusID: statusId,
             remarks,
         };
-
+        const token = localStorage.getItem("token");
         try {
             const response = await fetch(`${updateOrderItemStatus}/${orderId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(payload),
             });
@@ -166,7 +167,7 @@ const OrderDetailsScreen = () => {
                                     </Combobox.Button>
                                 </div>
                                 <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white shadow-lg z-10">
-                                     {orderStatusData.map((status) => (
+                                    {orderStatusData.map((status) => (
                                         <Combobox.Option
                                             key={status.OrderStatus}
                                             value={status.OrderStatus}
@@ -340,7 +341,7 @@ const OrderDetailsScreen = () => {
                                                 ₹{(item.quantity * parseFloat(item.price || 0)).toFixed(2)}
                                             </td>
                                             <td className="px-4 py-2 text-sm text-gray-800">
-                                            <StatusBadge status={item.product?.orderHistory?.status }/>
+                                                <StatusBadge status={item.product?.orderHistory?.status} />
                                             </td>
 
                                             <td className="px-4 py-2 text-sm text-gray-800">
@@ -373,27 +374,58 @@ const OrderDetailsScreen = () => {
                                 <h3 className="text-lg font-semibold mb-4">Edit Item</h3>
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                                    <select
-                                        value={statusId}
-                                        onChange={(e) => setStatusId(Number(e.target.value))}
-                                        className="w-full border rounded p-2"
-                                    >
-                                        {orderStatusData.map((status) =>  (
-                                            <option key={status.StatusID} value={status.StatusID}>
-                                                {status.OrderStatus}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative">
+                                        <Combobox value={statusId} onChange={setStatusId}>
+                                            <div className="relative w-full">
+                                                <Combobox.Input
+                                                    className="w-full border rounded p-2 pr-10"
+                                                    displayValue={(statusId) =>
+                                                        orderStatusData.find((status) => status.StatusID === statusId)?.OrderStatus || ""
+                                                    }
+                                                />
+                                                <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                                    <HiChevronDown className="w-5 h-5 text-gray-500" />
+                                                </Combobox.Button>
+                                            </div>
+                                            <Combobox.Options className="absolute mt-1 w-full bg-white border rounded shadow-md z-10">
+                                                {/* Filter statuses to show only those after the current status */}
+                                                {orderStatusData
+                                                    .filter((status) => {
+                                                        // If orderData exists and there are orderItems, filter statuses
+                                                        if (orderData?.orderItems?.length > 0) {
+                                                            // Get the current status of the first order item (adjust as needed)
+                                                            const itemStatus = orderData.orderItems[0]?.product?.orderHistory?.status;
+                                                            const currentStatusIndex = orderStatusData.findIndex(
+                                                                (s) => s.OrderStatus === itemStatus
+                                                            );
+
+                                                            // Only show statuses that come after the current status
+                                                            return orderStatusData.findIndex(s => s.StatusID === status.StatusID) > currentStatusIndex;
+                                                        }
+                                                        return false; // If no orderItems, show nothing or adjust accordingly
+                                                    })
+                                                    .map((status) => (
+                                                        <Combobox.Option
+                                                            key={status.StatusID}
+                                                            value={status.StatusID}
+                                                            className="p-2 cursor-pointer hover:bg-gray-100"
+                                                        >
+                                                            {status.OrderStatus}
+                                                        </Combobox.Option>
+                                                    ))}
+                                            </Combobox.Options>
+                                        </Combobox>
+                                    </div>
                                 </div>
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Remarks</label>
-                                    <input
-                                        type="text"
+                                    <textarea
                                         value={remarks}
                                         onChange={(e) => setRemarks(e.target.value)}
-                                        className="w-full border rounded p-2"
+                                        className="w-full border rounded p-2 h-24 resize-none"
                                     />
                                 </div>
+
                                 <div className="flex justify-end">
                                     <button
                                         onClick={closeDialog}
@@ -412,6 +444,7 @@ const OrderDetailsScreen = () => {
                             </div>
                         </div>
                     )}
+
                 </div>
 
 

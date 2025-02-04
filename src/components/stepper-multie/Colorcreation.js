@@ -58,8 +58,14 @@ const Step3 = () => {
   };
   const [colourDetails, setColourDetails] = useState(null);
   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (ColourID) {
-      axios.get(`${getColourById}/${ColourID}`)
+      axios.get(`${getColourById}/${ColourID}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Pass token in Authorization header
+       
+        },
+      })
         .then(response => {
           if (response.data.status === "SUCCESS") {
             setColourDetails(response.data.data); // Extracting and storing the color details
@@ -97,9 +103,13 @@ const Step3 = () => {
       CreatedBy: String("admin"), // Convert CreatedBy to string
       UpdatedBy: String("admin"), // Convert UpdatedBy to string
     };
-
+    const token = localStorage.getItem("token");
     try {
-      const response = await axios.post(apiUrl, colourData);
+      const response = await axios.post(apiUrl, colourData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Pass token in Authorization header
+        
+        },});
       if (response.status === 200 || response.status === 201) {
         toast.success(response.data.message || "Colour created successfully!", {
           position: "top-right",
@@ -147,7 +157,13 @@ const Step3 = () => {
     };
 
     try {
-      const response = await axios.put(apiUrl, colourData); // Use PUT method for updates
+      const token = localStorage.getItem("token");
+      const response = await axios.put(apiUrl, colourData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Pass token in Authorization header
+         
+        },
+      }); // Use PUT method for updates
       if (response.status === 200 || response.status === 201) {
         toast.success(response.data.message || "Colour updated successfully!", {
           position: "top-right",

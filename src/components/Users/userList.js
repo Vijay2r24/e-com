@@ -35,8 +35,15 @@ const UsersPage = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
+      const token = localStorage.getItem("token");
       try {
-        const response = await fetch(getAllUsers); // Replace with your API endpoint
+        const response = await fetch(getAllUsers,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Pass token in Authorization header
+              "Content-Type": "application/json", // Set correct content type
+          }
+        }); // Replace with your API endpoint
         const data = await response.json();
         if (data.StatusCode === "SUCCESS") {
           setUsers(data.users);
@@ -69,10 +76,12 @@ const UsersPage = () => {
 
   const handleDelete = async (userId) => {
     try {
+      const token = localStorage.getItem("token");
         const response = await fetch(`${deleteUser}/${userId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
         });
         const result = await response.json();

@@ -10,7 +10,13 @@ export const DataProvider = ({ children }) => {
   // Fetch data from API
   const fetchData = async () => {
     try {
-      const response = await fetch('https://electronic-ecommerce.onrender.com/api/getAllSizes');
+      const token = localStorage.getItem("token");
+      const response = await fetch('https://electronic-ecommerce.onrender.com/api/admin/getAllSizes', {
+        headers: {
+          Authorization: `Bearer ${token}`, // Pass token in Authorization header
+        
+        },
+      });
       const result = await response.json();
       if (result.status === 'SUCCESS' && Array.isArray(result.data)) {
         setData(result.data); // Use the correct key 'data'

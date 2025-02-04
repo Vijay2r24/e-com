@@ -41,10 +41,13 @@ const ProductTypeTable = ({ onEditAction }) => {
     // };
 
     const deleteProductType = async (ProductTypeID) => {
+        const token = localStorage.getItem("token");
         try {
             const response = await fetch(`${deleteProductTypeAPI}/${ProductTypeID}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json' ,
+                    Authorization: `Bearer ${token}`, 
+                },
             });
             const result = await response.json();
             if (response.ok) {
@@ -78,8 +81,14 @@ const ProductTypeTable = ({ onEditAction }) => {
 
     useEffect(() => {
         const fetchProductTypes = async () => {
+            const token = localStorage.getItem("token");
             try {
-                const response = await fetch(getAllProductTypesAPI); // Replace with your API
+                const response = await fetch(getAllProductTypesAPI, {
+                    headers: {
+                      Authorization: `Bearer ${token}`, // Pass token in Authorization header
+                 
+                    },
+                }); // Replace with your API
                 const data = await response.json();
                 if (data.status === "SUCCESS") {
                     setProductTypes(data.data);

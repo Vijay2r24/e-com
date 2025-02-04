@@ -79,11 +79,13 @@ const CategoryTable = () => {
     currentPage * rowsPerPage + rowsPerPage
   );
   const deleteCategory = async (categoryID) => {
+    const token = localStorage.getItem("token");
     try {
       const response = await fetch(`${DeleteCategory}/${categoryID}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, 
         },
       });
       const result = await response.json();

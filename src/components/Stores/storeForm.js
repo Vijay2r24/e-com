@@ -132,10 +132,12 @@ const UserForm = () => {
     }
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(postStore, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
@@ -156,10 +158,15 @@ const UserForm = () => {
       console.error("Error:", error);
     }
   };
-  useEffect(() => {
+   useEffect(() => {
+    const token = localStorage.getItem("token");
     if (storeId) {
       axios
-        .get(`${getStoreById}/${storeId}`)
+        .get(`${getStoreById}/${storeId}`,{
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass token in Authorization header
+          },
+        })
         .then((response) => {
           if (response.data.StatusCode === "SUCCESS") {
             setStoreData(response.data.store);

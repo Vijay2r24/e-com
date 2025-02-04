@@ -125,27 +125,35 @@ useEffect(() => {
   const [user, setUser] = useState(null);  // for storing user brand data
   const [editMode, setEditMode] = useState(false);  // for managing edit mode
   useEffect(() => {
-    if (userId) {
-      axios.get(`${getUserById}/${userId}`)
-        .then(response => {
-          console.log("API Response:", response.data);  // Log the entire response for inspection
-          console.log("StatusCode:", response.data.StatusCode); // Log the actual statusCode
-
-          // Check for a successful statusCode (handle potential variations)
-          if (response.data.StatusCode == "SUCCESS") {
-            setUser(response.data.user);
-            console.log("setUser", response.data.user);  // Log the data directly here
-          } else {
-            // Log the error message directly if the statusCode is not as expected
-            console.error("Failed to fetch user:", response.data.message || "Unknown error");
-          }
-        })
-        .catch(error => {
-          // Log the network or other errors directly
-          console.error('Error fetching data:', error.message);
-        });
-    }
-  }, [userId]);
+        if (userId) {
+          const token = localStorage.getItem("token");
+    
+      axios.get(`${getUserById}/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Pass token in Authorization header
+          "Content-Type": "application/json", // Set correct content type
+        },
+      })
+            .then(response => {
+              console.log("API Response:", response.data);  // Log the entire response for inspection
+              console.log("StatusCode:", response.data.StatusCode); // Log the actual statusCode
+    
+              // Check for a successful statusCode (handle potential variations)
+              if (response.data.StatusCode == "SUCCESS") {
+                setUser(response.data.user);
+                console.log("setUser", response.data.user);  // Log the data directly here
+              } else {
+                // Log the error message directly if the statusCode is not as expected
+                console.error("Failed to fetch user:", response.data.message || "Unknown error");
+              }
+            })
+            .catch(error => {
+              // Log the network or other errors directly
+              console.error('Error fetching data:', error.message);
+            });
+        }
+      }, [userId]);
+    
   const filterStates = (countryID) =>
     statesData.data.filter((state) => state.CountryID === countryID);
 
@@ -217,12 +225,13 @@ useEffect(() => {
     // Append the entire object as a JSON string
     formData.append("data", JSON.stringify(userData));
     formData.append("ProfileImage", formData1.imageFile)
-
+    const token = localStorage.getItem("token");
     try {
       // Make the API request
       const response = await axios.post(apiUrl, formData, {
         headers: {
           "Content-Type": "multipart/form-data", // Ensure the request is recognized as multipart/form-data
+          Authorization: `Bearer ${token}`,
         },
       });
 

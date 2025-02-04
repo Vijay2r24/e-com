@@ -36,10 +36,12 @@ const OrderTable = () => {
     };
     const deleteCategory = async (BrandID) => {
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`${deleteBrand}/${BrandID}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`, 
                 },
             });
             const result = await response.json();
@@ -102,14 +104,19 @@ const OrderTable = () => {
     useEffect(() => {
         // API URL
         const apiUrl = getAllBrands;
-
+        const token = localStorage.getItem("token");
         // Fetching data from the API
         const storedData = sessionStorage.getItem('brands');
         if (storedData) {
             // If data exists in sessionStorage, use it
             setSession(JSON.parse(storedData));
         }
-        fetch(apiUrl)
+        fetch(apiUrl, {
+            headers: {
+              Authorization: `Bearer ${token}`, // Pass token in Authorization header
+           
+            },
+    })
             .then((response) => response.json())
             .then((data) => {
                 if (data.status === 'SUCCESS') {

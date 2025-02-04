@@ -10,10 +10,14 @@ export const ColorProvider = ({ children }) => {
 
   // Function to fetch and store colors
   const fetchAndStoreColors = async () => {
+    const token = localStorage.getItem("token");
     try {
       const response = await axios.get(
-        "https://electronic-ecommerce.onrender.com/api/getAllColours"
-      );
+        "https://electronic-ecommerce.onrender.com/api/admin/getAllColours", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass token in Authorization header
+          },
+        });
 
       if (response.data.status === "SUCCESS") {
         const fetchedColors = response.data.data;

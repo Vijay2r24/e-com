@@ -52,7 +52,12 @@ button:hover {
 .edit-button {
   @apply bg-pacific-100 text-pacific-500 w-[75px] flex justify-center items-center;
 }
- 
+.save-button {
+  @apply bg-green-500 text-white w-[75px] flex justify-center items-center;
+}
+.cancel-button {
+  @apply bg-red-500 text-white w-[75px] flex justify-center items-center;
+}
 .select-button:hover {
   @apply bg-blue-200 text-blue-600;
 }

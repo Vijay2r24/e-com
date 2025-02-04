@@ -91,10 +91,15 @@ const Step2 = (errors) => {
         setPreviewImages((prevImages) => [...prevImages, ...uniqueImages]);
     };
     useEffect(() => {
+        const token = localStorage.getItem("token");
         if (!categoryID) return;
 
         axios
-            .get(`${getCategoryById}/${categoryID}`)
+            .get(`${getCategoryById}/${categoryID}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`, // Pass token in Authorization header
+                },
+            })
             .then((response) => {
                 // Function to clean all string fields in the response data
                 const cleanString = (str) => {
@@ -175,11 +180,13 @@ const Step2 = (errors) => {
         for (let [key, value] of data.entries()) {
             console.log(key, value);
         }
+        const token = localStorage.getItem("token");
 
         try {
             const response = await fetch(Categorycreation, {
                 method: 'POST',
                 body: data,
+                Authorization: `Bearer ${token}`,
             });
 
             if (response.ok) {
@@ -242,6 +249,7 @@ const Step2 = (errors) => {
         }
     };
     const updateCategory = async () => {
+        const token = localStorage.getItem("token");
         const apiUrl = `${UpdateCategory}/${categoryID}`;
 
         // Create a new FormData object
@@ -266,6 +274,7 @@ const Step2 = (errors) => {
             const response = await fetch(apiUrl, {
                 method: "PUT", // Assuming POST method for update; adjust to PUT if required
                 body: data,
+                Authorization: `Bearer ${token}`,
             });
 
             if (!response.ok) {

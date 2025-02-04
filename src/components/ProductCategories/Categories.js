@@ -93,9 +93,13 @@ function Home({ errors = {} }) {
     };
     useEffect(() => {
         if (!categoryID) return;
-
+        const token = localStorage.getItem("token");
         axios
-            .get(`https://electronic-ecommerce.onrender.com/api/getCategoryById/${categoryID}`)
+            .get(`https://electronic-ecommerce.onrender.com/api/getCategoryById/${categoryID}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`, // Pass token in Authorization header
+                 
+                },})
             .then((response) => {
                 // Function to clean all string fields in the response data
                 const cleanString = (str) => {
@@ -177,11 +181,12 @@ function Home({ errors = {} }) {
         for (let [key, value] of data.entries()) {
             console.log(key, value);
         }
-    
+        const token = localStorage.getItem("token");
         try {
             const response = await fetch('https://electronic-ecommerce.onrender.com/api/categoryWithImages', {
                 method: 'POST',
                 body: data,
+                Authorization: `Bearer ${token}`, 
             });
     
             if (response.ok) {
@@ -244,6 +249,7 @@ function Home({ errors = {} }) {
         }
     };    
 const updateCategory = async () => {
+    const token = localStorage.getItem("token");
     const apiUrl = `https://electronic-ecommerce.onrender.com/api/updateCategory/${categoryID}`;
 
     // Create a new FormData object
@@ -269,6 +275,7 @@ const updateCategory = async () => {
         const response = await fetch(apiUrl, {
             method: "PUT", // Assuming POST method for update; adjust to PUT if required
             body: data,
+            Authorization: `Bearer ${token}`, 
         });
 
         if (!response.ok) {

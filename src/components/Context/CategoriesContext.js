@@ -8,11 +8,16 @@ export const CategoriesProvider = ({ children }) => {
     const [categories, setCategories] = useState([]);
 
     const fetchAndStoreCategories = async () => {
-        const apiUrl = 'https://electronic-ecommerce.onrender.com/api/getAllCategories';
+        const token = localStorage.getItem("token");
+        const apiUrl = 'https://electronic-ecommerce.onrender.com/api/admin/getAllCategories';
 
         try {
             // Fetch data from API
-            const response = await fetch(apiUrl);
+            const response = await fetch(apiUrl, {
+                headers: {
+                  Authorization: `Bearer ${token}`, // Pass token in Authorization header
+                },
+            });
             const result = await response.json();
 
             if (result.statusCode === 'SUCCESS') {

@@ -1,5 +1,6 @@
 
 export const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+export const Login = `${BASE_URL}/userlogin`;
 export const Categories = `${BASE_URL}/categoryWithImages`;
 export const getAllBrands = `${BASE_URL}/getAllBrands`;
 export const deleteBrand=`${BASE_URL}/deleteBrand`;
@@ -46,5 +47,7 @@ export const getCategoryById=`${BASE_URL}/getCategoryById`;
 export const UpdateCategory=`${BASE_URL}/updateCategory`;
 export const getAllCategories=`${BASE_URL}/getAllCategories`;
 export const DeleteCategory=`${BASE_URL}/deleteCategory`;
+export const GetAllBanners=`${BASE_URL}/getAllBanners`;
+export const PostBanners=`${BASE_URL}/banners`;
+export const UpdateBannerStatus=`${BASE_URL}/updateBannerstatus`;
 export const getAllOrderStatus=`${BASE_URL}/getAllOrderStatus`;
-export const userlogin=`${BASE_URL}/userlogin`;

@@ -36,7 +36,13 @@ const UsersPage = () => {
     // Fetch stores data
     const fetchStores = async () => {
       try {
-        const response = await fetch(getAllStores);
+        const token = localStorage.getItem("token");
+        const response = await fetch(getAllStores, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass token in Authorization header
+            "Content-Type": "application/json", // Set correct content type
+      },
+    });
         const data = await response.json();
 
         if (data.StatusCode === "SUCCESS") {

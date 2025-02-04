@@ -1,4 +1,3 @@
-
 import React, { useContext } from "react";
 import { LocationDataContext } from "../Context/DataContext";
 const StatusBadge = ({ status }) => {
@@ -26,4 +25,3 @@ const StatusBadge = ({ status }) => {
 };
 
 export default StatusBadge;
-

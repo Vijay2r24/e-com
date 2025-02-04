@@ -48,7 +48,7 @@ const Step1 = () => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        const token = localStorage.getItem("token");
         // Create a JSON object with necessary data
         const data = {
             BrandName: formData.brandName,
@@ -63,7 +63,8 @@ const Step1 = () => {
             const response = await fetch(createBrand, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`, 
                 },
                 body: JSON.stringify(data),
             });
@@ -119,7 +120,7 @@ const Step1 = () => {
     };
     const handleUpdate = async (e) => {
         e.preventDefault();
-
+        const token = localStorage.getItem("token");
         // Create a JSON object with necessary data for updating
         const data = {
             BrandName: formData.brandName,
@@ -134,7 +135,8 @@ const Step1 = () => {
             const response = await fetch(`${updateBrandById}/${BrandID}`, {
                 method: 'PUT', // Change method to PUT for updating
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`, 
                 },
                 body: JSON.stringify(data),
             });
@@ -190,8 +192,13 @@ const Step1 = () => {
     };
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
         if (BrandID) {
-            axios.get(`${getBrandById}/${BrandID}`)
+            axios.get(`${getBrandById}/${BrandID}`, {
+                headers: {
+                  Authorization: `Bearer ${token}`, // Pass token in Authorization header
+                },
+            })
                 .then(response => {
                     if (response.data.statusCode === "SUCCESS") {
                         setBrand(response.data.data);

@@ -10,10 +10,14 @@ export const BrandsProvider = ({ children }) => {
 
     const fetchAndStoreBrands = async () => {
         const apiUrl = getAllBrands;
-
+        const token = localStorage.getItem("token");
         try {
             // Fetch data from API
-            const response = await fetch(apiUrl);
+            const response = await fetch(apiUrl, {
+                headers: {
+                  Authorization: `Bearer ${token}`, // Pass token in Authorization header
+           
+                },});
             const data = await response.json();
 
             if (data.status === 'SUCCESS') {

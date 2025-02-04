@@ -47,7 +47,8 @@ import BannerForm from "./components/Dynamic_Banner_Image/banner_Image";
 import  ExpoSnackEmbed from "./ExpoSnackEmbed";
 import SilentNotification from "./components/PushNotification/silentnotification";
 import Notifications from "./components/PushNotification/Home";
-import RolesList from "./components/UserRoles/UserList"
+import RolesList from "./components/UserRoles/UserList";
+import BannerList from "./components/Dynamic_Banner_Image/bannerlist";
 
 const AppRoutes = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -157,6 +158,10 @@ const AppRoutes = () => {
         {
           path: "/dynamicui",
           element: <ExpoSnackEmbed snackData={snackData} />,
+        },
+        {
+          path:"/bannerlist",
+          element:<BannerList/>
         },
         {
           path: "/Notifications",
